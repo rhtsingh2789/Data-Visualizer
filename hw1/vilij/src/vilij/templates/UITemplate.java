@@ -2,10 +2,12 @@ package vilij.templates;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -131,7 +133,11 @@ public class UITemplate implements UIComponent {
         primaryStage.setTitle(applicationTitle);
         primaryStage.setResizable(applicationTemplate.manager.getPropertyValueAsBoolean(IS_WINDOW_RESIZABLE.name()));
         appPane = new VBox();
+        Pane chart = new HBox();
         appPane.getChildren().add(toolBar);
+        chart.getChildren().add(new TextArea());
+        appPane.getChildren().add(chart);
+
 
         primaryScene = windowWidth < 1 || windowHeight < 1 ? new Scene(appPane)
                                                            : new Scene(appPane, windowWidth, windowHeight);

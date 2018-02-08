@@ -1,6 +1,7 @@
 package actions;
 
 import vilij.components.ActionComponent;
+import vilij.components.Dialog;
 import vilij.templates.ApplicationTemplate;
 
 import java.io.IOException;
@@ -40,6 +41,12 @@ public final class AppActions implements ActionComponent {
 
     @Override
     public void handleExitRequest() {
+        try {
+            promptToSave();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.exit(0);
         // TODO for homework 1
     }
 
@@ -65,6 +72,7 @@ public final class AppActions implements ActionComponent {
      * @return <code>false</code> if the user presses the <i>cancel</i>, and <code>true</code> otherwise.
      */
     private boolean promptToSave() throws IOException {
+        applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION).show("Hello","Change this");
         // TODO for homework 1
         // TODO remove the placeholder line below after you have implemented this method
         return false;
