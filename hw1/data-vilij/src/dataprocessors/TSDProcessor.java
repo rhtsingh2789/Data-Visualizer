@@ -28,8 +28,8 @@ public final class TSDProcessor {
         }
     }
 
-    private Map<String, String>  dataLabels;
-    private Map<String, Point2D> dataPoints;
+    private  static Map<String, String>  dataLabels;
+    private  static Map<String, Point2D> dataPoints;
 
     public TSDProcessor() {
         dataLabels = new HashMap<>();

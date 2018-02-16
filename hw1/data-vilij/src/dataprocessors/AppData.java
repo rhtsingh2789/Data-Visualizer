@@ -2,6 +2,7 @@ package dataprocessors;
 
 import ui.AppUI;
 import vilij.components.DataComponent;
+import vilij.components.ErrorDialog;
 import vilij.templates.ApplicationTemplate;
 
 import java.nio.file.Path;
@@ -27,7 +28,15 @@ public class AppData implements DataComponent {
         // TODO: NOT A PART OF HW 1
     }
 
+
     public void loadData(String dataString) {
+        TSDProcessor processor = new TSDProcessor();
+        try {
+            processor.processString(dataString);
+            displayData();
+        } catch (Exception e) {
+            ErrorDialog.getDialog().show("BAD INPUT", "Please make sure that the input is correct.");
+        }
         // TODO for homework 1
     }
 

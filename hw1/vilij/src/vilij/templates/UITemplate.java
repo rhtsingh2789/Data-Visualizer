@@ -133,10 +133,7 @@ public class UITemplate implements UIComponent {
         primaryStage.setTitle(applicationTitle);
         primaryStage.setResizable(applicationTemplate.manager.getPropertyValueAsBoolean(IS_WINDOW_RESIZABLE.name()));
         appPane = new VBox();
-        Pane chart = new HBox();
         appPane.getChildren().add(toolBar);
-        chart.getChildren().add(new TextArea());
-        appPane.getChildren().add(chart);
 
 
         primaryScene = windowWidth < 1 || windowHeight < 1 ? new Scene(appPane)

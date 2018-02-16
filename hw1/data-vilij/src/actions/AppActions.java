@@ -1,9 +1,13 @@
 package actions;
 
+import javafx.stage.FileChooser;
+import ui.AppUI;
 import vilij.components.ActionComponent;
-import vilij.components.Dialog;
+import vilij.components.ConfirmationDialog;
 import vilij.templates.ApplicationTemplate;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -26,6 +30,12 @@ public final class AppActions implements ActionComponent {
 
     @Override
     public void handleNewRequest() {
+        try {
+            this.promptToSave();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // TODO for homework 1
     }
 
@@ -41,11 +51,6 @@ public final class AppActions implements ActionComponent {
 
     @Override
     public void handleExitRequest() {
-        try {
-            promptToSave();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         System.exit(0);
         // TODO for homework 1
     }
@@ -72,7 +77,31 @@ public final class AppActions implements ActionComponent {
      * @return <code>false</code> if the user presses the <i>cancel</i>, and <code>true</code> otherwise.
      */
     private boolean promptToSave() throws IOException {
-        applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION).show("Hello","Change this");
+        ConfirmationDialog.getDialog().show("Work is not Saved", "Would you like to save current work?");
+        try{
+            if(ConfirmationDialog.getSelectedOption().equals(ConfirmationDialog.Option.YES)) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("Tab Seperated Data", "*.tsd"));
+                File selectedFile = fileChooser.showSaveDialog(ConfirmationDialog.getDialog());
+
+                if (selectedFile != null) {
+                    FileWriter writer = new FileWriter(selectedFile);
+                    writer.write(((AppUI) (applicationTemplate.getUIComponent())).getTextArea());
+                    writer.close();
+                }
+                applicationTemplate.getUIComponent().clear();
+            }
+            else if(ConfirmationDialog.getSelectedOption()== ConfirmationDialog.Option.NO) {
+                ((AppUI) (applicationTemplate.getUIComponent())).getTextArea();
+                applicationTemplate.getUIComponent().clear();
+            }
+        }catch (Exception e){
+            System.out.println();
+        }
+
+
+
         // TODO for homework 1
         // TODO remove the placeholder line below after you have implemented this method
         return false;
