@@ -79,7 +79,7 @@ public final class AppActions implements ActionComponent {
     private boolean promptToSave() throws IOException {
         ConfirmationDialog.getDialog().show("Work is not Saved", "Would you like to save current work?");
         try{
-            if(ConfirmationDialog.getSelectedOption().equals(ConfirmationDialog.Option.YES)) {
+            if(ConfirmationDialog.getDialog().getSelectedOption().equals(ConfirmationDialog.Option.YES)) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.getExtensionFilters().addAll(
                         new FileChooser.ExtensionFilter("Tab Seperated Data", "*.tsd"));
@@ -92,7 +92,7 @@ public final class AppActions implements ActionComponent {
                 }
                 applicationTemplate.getUIComponent().clear();
             }
-            else if(ConfirmationDialog.getSelectedOption()== ConfirmationDialog.Option.NO) {
+            else if(ConfirmationDialog.getDialog().getSelectedOption()== ConfirmationDialog.Option.NO) {
                 ((AppUI) (applicationTemplate.getUIComponent())).getTextArea();
                 applicationTemplate.getUIComponent().clear();
             }

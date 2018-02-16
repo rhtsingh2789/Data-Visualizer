@@ -37,7 +37,7 @@ public class ConfirmationDialog extends Stage implements Dialog {
     private static ConfirmationDialog dialog;
 
     private Label confirmationMessage = new Label();
-    private static Option selectedOption;
+    private Option selectedOption;
 
     private ConfirmationDialog() { /* empty constructor */ }
 
@@ -95,5 +95,5 @@ public class ConfirmationDialog extends Stage implements Dialog {
     }
 
 
-    public static Option getSelectedOption() { return selectedOption; }
+    public Option getSelectedOption() { return selectedOption; }
 }
