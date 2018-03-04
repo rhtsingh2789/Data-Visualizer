@@ -27,10 +27,15 @@ functionality within the main workspace. -->
         <property name="SAVE_UNSAVED_WORK" value="Would you like to save current work?"/>
 
         <!-- APPLICATION-SPECIFIC PARAMETERS -->
-        <property name="DATA_FILE_EXT" value=".tsd"/>
+        <property name="DATA_FILE_EXT" value="*.tsd"/>
         <property name="DATA_FILE_EXT_DESC" value="Tab-Separated Data File"/>
         <property name="TEXT_AREA" value="text area"/>
         <property name="SPECIFIED_FILE" value=" specified file"/>
+
+        <!-- RESOURCE FILES AND FOLDERS -->
+        <property name="GUI_RESOURCE_PATHS" value="gui"/>
+        <property name="CSS_RESOURCE_PATHS" value="css"/>
+        <property name="CSS_RESOURCE_FILENAMES" value="chartediter.css"/>
 
     </property_list>
     <property_options_list/>

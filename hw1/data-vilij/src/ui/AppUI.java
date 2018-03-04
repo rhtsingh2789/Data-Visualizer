@@ -2,24 +2,22 @@ package ui;
 
 import actions.AppActions;
 import dataprocessors.AppData;
-import dataprocessors.TSDProcessor;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import static settings.AppPropertyTypes.*;
-import vilij.components.ErrorDialog;
 import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
 
-import java.nio.file.Path;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import static vilij.settings.PropertyTypes.*;
 
@@ -35,14 +33,15 @@ public final class AppUI extends UITemplate {
 
     @SuppressWarnings("FieldCanBeLocal")
     private Button                       scrnshotButton; // toolbar button to take a screenshot of the data
-    private ScatterChart<Number, Number> chart;          // the chart where data will be displayed
+    private LineChart<Number, Number> chart;         // the chart where data will be displayed
     private Button                       displayButton;  // workspace button to display data on the chart
     private TextArea                     textArea;       // text area for new data input
     private boolean                      hasNewText;     // whether or not the text area has any new data since last display
-    private String                         scrnshotPath;
-    private final static String SEPARATOR = "/";
+    private String                       scrnshotPath;
+    private final static String          SEPARATOR = "/";
+    private CheckBox                     readOnly;
 
-    public ScatterChart<Number, Number> getChart() { return chart; }
+    public LineChart<Number, Number> getChart() { return chart; }
 
     public AppUI(Stage primaryStage, ApplicationTemplate applicationTemplate) {
         super(primaryStage, applicationTemplate);
@@ -52,9 +51,11 @@ public final class AppUI extends UITemplate {
     @Override
     protected void setResourcePaths(ApplicationTemplate applicationTemplate) {
         PropertyManager manager = applicationTemplate.manager;
+
         String iconsPath = SEPARATOR + String.join(SEPARATOR,
                 manager.getPropertyValue(GUI_RESOURCE_PATH.name()),
                 manager.getPropertyValue(ICONS_RESOURCE_PATH.name()));
+
         super.setResourcePaths(applicationTemplate);
         scrnshotPath = String.join(SEPARATOR, iconsPath, manager.getPropertyValue(SCREENSHOT_ICON.name()));
     }
@@ -76,6 +77,15 @@ public final class AppUI extends UITemplate {
         loadButton.setOnAction(e -> applicationTemplate.getActionComponent().handleLoadRequest());
         exitButton.setOnAction(e -> applicationTemplate.getActionComponent().handleExitRequest());
         printButton.setOnAction(e -> applicationTemplate.getActionComponent().handlePrintRequest());
+
+        scrnshotButton.setOnAction(e -> {
+            try{
+                ((AppActions) applicationTemplate.getActionComponent()).handleScreenshotRequest();
+            }
+            catch (IOException ex){
+
+            }
+        });
     }
 
     @Override
@@ -93,39 +103,107 @@ public final class AppUI extends UITemplate {
         // TODO for homework 1
     }
 
+    public void clearChart() {
+        if(!chart.getData().isEmpty()){
+            chart.getData().clear();
+        }
+        // TODO for homework 1
+    }
+
     private void layout() {
-        chart = new ScatterChart<Number, Number>(new NumberAxis(),new NumberAxis());
+        chart = new LineChart<Number, Number>(new NumberAxis(),new NumberAxis());
         chart.setTitle("Data Visualization");
         textArea = new TextArea();
         VBox labelBox = new VBox();
         labelBox.getChildren().add(new Label("Data File"));
+
         labelBox.setAlignment(Pos.CENTER);
         labelBox.setMaxWidth(400);
         textArea.setPrefWidth(400);
+        textArea.setPrefRowCount(10);
         chart.setPrefWidth(600);
+
+        chart.setHorizontalGridLinesVisible(false);
+        chart.setVerticalGridLinesVisible(false);
+
+        PropertyManager manager = applicationTemplate.manager;
+        String cssPath1 = "/" + String.join(SEPARATOR,
+                manager.getPropertyValue(GUI_RESOURCE_PATHS.name()),
+                manager.getPropertyValue(CSS_RESOURCE_PATHS.name()),
+                manager.getPropertyValue(CSS_RESOURCE_FILENAMES.name()));
+        chart.getStylesheets().add(cssPath1);
+
         displayButton= new Button("Display");
         HBox chartholder=new HBox();
         VBox textholder= new VBox();
-        chartholder.getChildren().addAll(textholder);
+        readOnly = new CheckBox("Read Only");
 
-        textholder.getChildren().addAll(labelBox, textArea, displayButton);
+        chartholder.getChildren().addAll(textholder);
+        textholder.getChildren().addAll(labelBox, textArea, displayButton, readOnly);
         chartholder.getChildren().add(chart);
         appPane.getChildren().add(chartholder);
         // TODO for homework 1
     }
 
+
+    public void setChartAreaActions(){
+        final Tooltip tooltip = new Tooltip();
+        tooltip.setText(
+                "\nYour password must be\n" +
+                        "at least 8 characters in length\n"
+        );
+        displayButton.setTooltip(tooltip);
+
+    }
+
+    public void setTextAreaActions() {
+        textArea.textProperty().addListener(observable -> {
+            if(((AppData) applicationTemplate.getDataComponent()).checkTen(textArea.getText())){
+                ((AppData) applicationTemplate.getDataComponent()).makeTen(textArea.getText());
+            }
+        });
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                if (!newValue.equals(oldValue)) {
+                    if (!newValue.isEmpty()) {
+                        ((AppActions) applicationTemplate.getActionComponent()).setIsUnsavedProperty(true);
+                        if (newValue.charAt(newValue.length() - 1) == '\n')
+                            hasNewText = true;
+                        newButton.setDisable(false);
+                        saveButton.setDisable(false);
+                    } else {
+                        hasNewText = true;
+                        newButton.setDisable(true);
+                        saveButton.setDisable(true);
+                        scrnshotButton.setDisable(true);
+                    }
+                }
+                scrnshotButton.setDisable(false);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println(newValue);
+            }
+        });
+    }
+
+    public void setSavebutton(){
+        saveButton.setDisable(true);
+    }
+
+
     private void setWorkspaceActions() {
-        textArea.setOnKeyPressed(event -> {
-            newButton.setDisable(false);
-            saveButton.setDisable(false);
+        readOnly.setOnAction(e -> {
+            if(readOnly.isSelected()) {
+                textArea.setDisable(true);
+            }
+            else{
+                textArea.setDisable(false);
+            }
+
         });
-        textArea.setOnKeyTyped(event -> {
-            if(textArea.getText().equals("")){
-             newButton.setDisable(true);
-             saveButton.setDisable(true);
-         }
-        });
+        setTextAreaActions();
         displayButton.setOnAction(e -> {
+            setChartAreaActions();
+            clearChart();
             ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
         });
         // TODO for homework 1
@@ -133,5 +211,8 @@ public final class AppUI extends UITemplate {
 
     public String getTextArea() {
         return textArea.getText();
+    }
+    public void setTextArea(String fileString) {
+        textArea.setText(fileString);
     }
 }

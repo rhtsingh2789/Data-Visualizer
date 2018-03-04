@@ -1,8 +1,14 @@
 package dataprocessors;
 
+import com.sun.xml.internal.xsom.impl.scd.Iterators;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Tooltip;
+import ui.AppUI;
+import vilij.components.ErrorDialog;
 
+import java.awt.color.ICC_Profile;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -30,6 +36,9 @@ public final class TSDProcessor {
 
     private  static Map<String, String>  dataLabels;
     private  static Map<String, Point2D> dataPoints;
+    private HashSet<String> names = new HashSet<>();
+    int counter=0;
+    static double Yvalues, minX=0, maxX, average;
 
     public TSDProcessor() {
         dataLabels = new HashMap<>();
@@ -55,15 +64,32 @@ public final class TSDProcessor {
                       Point2D  point = new Point2D(Double.parseDouble(pair[0]), Double.parseDouble(pair[1]));
                       dataLabels.put(name, label);
                       dataPoints.put(name, point);
+                      counter++;
                   } catch (Exception e) {
                       errorMessage.setLength(0);
                       errorMessage.append(e.getClass().getSimpleName()).append(": ").append(e.getMessage());
                       hadAnError.set(true);
                   }
               });
-        if (errorMessage.length() > 0)
+        if (errorMessage.length() > 0) {
+            ErrorDialog.getDialog().show("BAD INPUT", "Please make sure that the input is correct at line " + (counter+1));
             throw new Exception(errorMessage.toString());
+        }
     }
+
+//    public void textAreaLines(String tsdString){
+//        counter = 0;
+//       String[] strings =  tsdString.split("\n");
+//       for(String s: strings){
+//           counter++;
+//           if(counter == 10){
+//               break;
+//           }
+//           else{
+//               textAreaString=s+"\n";
+//           }
+//       }
+//    }
 
     /**
      * Exports the data to the specified 2-D chart.
@@ -77,10 +103,47 @@ public final class TSDProcessor {
             series.setName(label);
             dataLabels.entrySet().stream().filter(entry -> entry.getValue().equals(label)).forEach(entry -> {
                 Point2D point = dataPoints.get(entry.getKey());
-                series.getData().add(new XYChart.Data<>(point.getX(), point.getY()));
+                XYChart.Data<Number, Number> points = new XYChart.Data<>(point.getX(), point.getY());
+                series.getData().add(points);
+                Yvalues+= point.getY();
+                counter++;
+                if(minX==0) {
+                    minX = point.getX();
+                }
+                if(point.getX()>maxX) {
+                    maxX = point.getX();
+                }
+                if(point.getX()<minX) {
+                    minX = point.getX();
+                }
             });
             chart.getData().add(series);
+            for (XYChart.Series<Number, Number> s : chart.getData()) {
+                for (XYChart.Data<Number, Number> d : s.getData()) {
+                    Tooltip tooltip = new Tooltip();
+                    Point2D point = new Point2D((double) d.getXValue(), (double) d.getYValue());
+                    Tooltip.install(d.getNode(), tooltip);
+                    tooltip.setText(getKeyFromValue(dataPoints,point));
+                    d.getNode().setCursor(Cursor.CROSSHAIR);
+                }
+            }
         }
+        average=(Yvalues/counter);
+        XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
+        series1.setName("Average");
+        series1.getData().add(new XYChart.Data<>(minX, average));
+        series1.getData().add(new XYChart.Data<>(maxX, average));
+
+        chart.getData().add(series1);
+    }
+
+    private String getKeyFromValue(Map<String, Point2D> dataPoints, Point2D point) {
+        for (Object o : dataPoints.keySet()) {
+            if (dataPoints.get(o).equals(point)) {
+                return o.toString();
+            }
+        }
+        return null;
     }
 
     void clear() {
@@ -89,8 +152,11 @@ public final class TSDProcessor {
     }
 
     private String checkedname(String name) throws InvalidDataNameException {
-        if (!name.startsWith("@"))
+        if (!name.startsWith("@") || names.contains(name)) {
             throw new InvalidDataNameException(name);
+        }
+        else
+            names.add(name);
         return name;
     }
 }
