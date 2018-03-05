@@ -3,6 +3,8 @@ package dataprocessors;
 import com.sun.xml.internal.xsom.impl.scd.Iterators;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Tooltip;
 import ui.AppUI;
@@ -118,6 +120,7 @@ public final class TSDProcessor {
                 }
             });
             chart.getData().add(series);
+            series.getNode().setStyle("-fx-stroke: transparent");
             for (XYChart.Series<Number, Number> s : chart.getData()) {
                 for (XYChart.Data<Number, Number> d : s.getData()) {
                     Tooltip tooltip = new Tooltip();
