@@ -2,11 +2,10 @@ package ui;
 
 import actions.AppActions;
 import dataprocessors.AppData;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -16,7 +15,6 @@ import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import static vilij.settings.PropertyTypes.*;
@@ -33,13 +31,16 @@ public final class AppUI extends UITemplate {
 
     @SuppressWarnings("FieldCanBeLocal")
     private Button                       scrnshotButton; // toolbar button to take a screenshot of the data
-    private LineChart<Number, Number> chart;         // the chart where data will be displayed
-    private Button                       displayButton;  // workspace button to display data on the chart
-    private TextArea                     textArea;       // text area for new data input
+    private LineChart<Number, Number>    chart;         // the chart where data will be displayed
+    private Button                       displayButton = new Button();  // workspace button to display data on the chart
+    private TextArea                     textArea = new TextArea();       // text area for new data input
     private boolean                      hasNewText;     // whether or not the text area has any new data since last display
     private String                       scrnshotPath;
     private final static String          SEPARATOR = "/";
     private CheckBox                     readOnly;
+    private HBox                         mainBox = new HBox();
+    private VBox                         splitBox = new VBox();
+    private VBox                         splitBox2 = new VBox();;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -111,16 +112,17 @@ public final class AppUI extends UITemplate {
     }
 
     private void layout() {
+        //splitBox = new VBox();
         chart = new LineChart<Number, Number>(new NumberAxis(),new NumberAxis());
-        chart.setTitle("Data Visualization");
-        textArea = new TextArea();
-        VBox labelBox = new VBox();
-        labelBox.getChildren().add(new Label("Data File"));
+        chart.setTitle("Plot");
+        //textArea = new TextArea();
+        //VBox labelBox = new VBox();
+        //labelBox.getChildren().add(new Label("Data File"));
 
-        labelBox.setAlignment(Pos.CENTER);
-        labelBox.setMaxWidth(400);
-        textArea.setPrefWidth(400);
-        textArea.setPrefRowCount(10);
+        //labelBox.setAlignment(Pos.CENTER);
+        //labelBox.setMaxWidth(400);
+//        textArea.setPrefWidth(400);
+//        textArea.setPrefRowCount(10);
         chart.setPrefWidth(600);
 
         chart.setHorizontalGridLinesVisible(false);
@@ -133,28 +135,44 @@ public final class AppUI extends UITemplate {
                 manager.getPropertyValue(CSS_RESOURCE_FILENAMES.name()));
         chart.getStylesheets().add(cssPath1);
 
-        displayButton= new Button("Display");
-        HBox chartholder=new HBox();
-        VBox textholder= new VBox();
+        //displayButton= new Button("Display");
+        VBox chartholder=new VBox();
+        chartholder.setAlignment(Pos.BASELINE_RIGHT);
+        //VBox textholder= new VBox();
         readOnly = new CheckBox("Read Only");
 
-        chartholder.getChildren().addAll(textholder);
-        textholder.getChildren().addAll(labelBox, textArea, displayButton, readOnly);
-        chartholder.getChildren().add(chart);
-        appPane.getChildren().add(chartholder);
+        //chartholder.getChildren().addAll(textholder);
+        //textholder.getChildren().addAll(labelBox, textArea, displayButton, readOnly);
+        //chartholder.getChildren().add(chart);
+        splitBox.getChildren().add(chart);
+        splitBox.setAlignment(Pos.TOP_RIGHT);
+        splitBox.setPrefWidth(600);
+        splitBox2.setPrefWidth(400);
+        mainBox.getChildren().addAll(splitBox2,splitBox);
+        appPane.getChildren().add(mainBox);
         // TODO for homework 1
     }
 
+    public void startingTextArea(){
+        VBox labelBox = new VBox();
+        textArea.setPrefWidth(400);
+        textArea.setPrefRowCount(10);
+        //labelBox.setAlignment(Pos.CENTER);
+        labelBox.setMaxWidth(400);
+        VBox textholder= new VBox();
+        displayButton.setText("Display");
+        labelBox.getChildren().addAll(new Label("Data File"), textArea, displayButton);
+        splitBox2.getChildren().add(labelBox);
+        //splitBox.getChildren().addAll(textholder);
+        //appPane.getChildren().add(splitBox2);
+    }
 
-    public void setChartAreaActions(){
-        final Tooltip tooltip = new Tooltip();
-        tooltip.setText(
-                "\nYour password must be\n" +
-                        "at least 8 characters in length\n"
-        );
-        displayButton.setTooltip(tooltip);
+
+
+    public void addAlgos(){
 
     }
+
 
     public void setTextAreaActions() {
         textArea.textProperty().addListener(observable -> {
@@ -202,11 +220,9 @@ public final class AppUI extends UITemplate {
         });
         setTextAreaActions();
         displayButton.setOnAction(e -> {
-            setChartAreaActions();
             clearChart();
             ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
         });
-        // TODO for homework 1
     }
 
     public String getTextArea() {

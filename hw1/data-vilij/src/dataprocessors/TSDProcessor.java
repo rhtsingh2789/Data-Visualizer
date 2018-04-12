@@ -1,16 +1,11 @@
 package dataprocessors;
 
-import com.sun.xml.internal.xsom.impl.scd.Iterators;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Tooltip;
-import ui.AppUI;
 import vilij.components.ErrorDialog;
 
-import java.awt.color.ICC_Profile;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;

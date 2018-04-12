@@ -46,7 +46,7 @@ public class AppData implements DataComponent {
         try{
             fullString = new Scanner(loadedFile).useDelimiter("//A").next();
             ((AppUI) (applicationTemplate.getUIComponent())).setTextArea(textAreaLines(fullString));
-            loadData(fullString);
+            loadData1(fullString);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -84,7 +84,14 @@ public class AppData implements DataComponent {
             ((AppUI) (applicationTemplate.getUIComponent())).setTextArea(textString);
         }
     }
-
+    public void loadData1(String dataString) {
+        TSDProcessor processor = new TSDProcessor();
+        try {
+            processor.processString(dataString);
+        } catch (Exception e) {
+        }
+        // TODO for homework 1
+    }
     public void loadData(String dataString) {
         TSDProcessor processor = new TSDProcessor();
         try {
@@ -118,15 +125,15 @@ public class AppData implements DataComponent {
             }
 
         }
-        else if(saveDataHelper()){
+        else if(saveDataHelper()) {
             try {
                 PropertyManager manager = applicationTemplate.manager;
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()),
-                            manager.getPropertyValue(DATA_FILE_EXT.name())));
-            File selectedFile = fileChooser.showSaveDialog(ConfirmationDialog.getDialog());
-            FileWriter writer;
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()),
+                                manager.getPropertyValue(DATA_FILE_EXT.name())));
+                File selectedFile = fileChooser.showSaveDialog(ConfirmationDialog.getDialog());
+                FileWriter writer;
                 writer = new FileWriter(selectedFile);
                 writer.write(((AppUI) (applicationTemplate.getUIComponent())).getTextArea());
                 writer.close();
@@ -136,7 +143,6 @@ public class AppData implements DataComponent {
 
             }
         }
-        else{ }
 
         // TODO: NOT A PART OF HW 1
     }

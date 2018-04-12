@@ -54,8 +54,9 @@ public final class AppActions implements ActionComponent {
     public void handleNewRequest() {
         try {
             this.promptToSave();
+            ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
         } catch (IOException e) {
-            e.printStackTrace();
+            ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
         }
 
         // TODO for homework 1
@@ -68,6 +69,7 @@ public final class AppActions implements ActionComponent {
 
     @Override
     public void handleLoadRequest() {
+        ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
         PropertyManager manager= applicationTemplate.manager;
         applicationTemplate.getUIComponent().clear();
         FileChooser fileChooser = new FileChooser();
