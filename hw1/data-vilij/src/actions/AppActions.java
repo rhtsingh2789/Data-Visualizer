@@ -55,8 +55,9 @@ public final class AppActions implements ActionComponent {
         try {
             this.promptToSave();
             ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
+            ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().clear();
+            ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().setDisable(false);
         } catch (IOException e) {
-            ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
         }
 
         // TODO for homework 1
@@ -69,7 +70,6 @@ public final class AppActions implements ActionComponent {
 
     @Override
     public void handleLoadRequest() {
-        ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
         PropertyManager manager= applicationTemplate.manager;
         applicationTemplate.getUIComponent().clear();
         FileChooser fileChooser = new FileChooser();
@@ -79,8 +79,10 @@ public final class AppActions implements ActionComponent {
         File selectedFile = fileChooser.showOpenDialog(ConfirmationDialog.getDialog());
         if (selectedFile != null) {
             dataFilePath = Paths.get(selectedFile.getAbsolutePath());
-            ((AppData) (applicationTemplate.getDataComponent())).loadData(dataFilePath);
+            ((AppData) applicationTemplate.getDataComponent()).loadData(dataFilePath);
         }        // TODO: NOT A PART OF HW 1
+        ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
+        ((AppUI) applicationTemplate.getUIComponent()).addAlgos();
     }
 
     @Override
@@ -156,5 +158,13 @@ public final class AppActions implements ActionComponent {
         // TODO for homework 1
         // TODO remove the placeholder line below after you have implemented this method
         return false;
+    }
+
+    public void handleClassificationRequest() {
+
+    }
+
+    public void handleClusteringRequest() {
+        ((AppUI) applicationTemplate.getUIComponent()).showAlgorithms();
     }
 }

@@ -34,7 +34,10 @@ public final class TSDProcessor {
     private  static Map<String, String>  dataLabels;
     private  static Map<String, Point2D> dataPoints;
     private HashSet<String> names = new HashSet<>();
-    int counter=0;
+    static int counter=0;
+    static int labelCounter =0, instanceCounter=0;
+    private static HashSet<String> labels= new HashSet<String>();
+
     static double Yvalues, minX=0, maxX, average;
 
     public TSDProcessor() {
@@ -49,6 +52,9 @@ public final class TSDProcessor {
      * @throws Exception if the input string does not follow the <code>.tsd</code> data format
      */
     public void processString(String tsdString) throws Exception {
+        counter = 0;
+        labelCounter = 0;
+        instanceCounter = 0;
         AtomicBoolean hadAnError   = new AtomicBoolean(false);
         StringBuilder errorMessage = new StringBuilder();
         Stream.of(tsdString.split("\n"))
@@ -59,6 +65,10 @@ public final class TSDProcessor {
                       String   label = list.get(1);
                       String[] pair  = list.get(2).split(",");
                       Point2D  point = new Point2D(Double.parseDouble(pair[0]), Double.parseDouble(pair[1]));
+                      if(labels.contains(label) == false){
+                          labels.add(label);
+                          labelCounter++;
+                      }
                       dataLabels.put(name, label);
                       dataPoints.put(name, point);
                       counter++;
@@ -153,8 +163,21 @@ public final class TSDProcessor {
         if (!name.startsWith("@") || names.contains(name)) {
             throw new InvalidDataNameException(name);
         }
-        else
+        else {
+            instanceCounter++;
             names.add(name);
+        }
         return name;
+    }
+
+    public int getLabelCounter(){
+        return labelCounter;
+    }
+    public int getInstanceCounter(){
+        return instanceCounter;
+    }
+
+    public HashSet<String> getLabels() {
+        return labels;
     }
 }

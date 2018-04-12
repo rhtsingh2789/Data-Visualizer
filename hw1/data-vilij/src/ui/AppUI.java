@@ -7,6 +7,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -40,7 +42,13 @@ public final class AppUI extends UITemplate {
     private CheckBox                     readOnly;
     private HBox                         mainBox = new HBox();
     private VBox                         splitBox = new VBox();
-    private VBox                         splitBox2 = new VBox();;
+    private VBox                         splitBox2 = new VBox();
+    private VBox                         algoBox;
+    private Button                       classification= new Button("Classification");
+    private Button                       clustering = new Button("Clustering");
+    private RadioButton                  clusteringAlg1 = new RadioButton("Algorithm 1");
+    private Button                       settingButton;
+    private String                      settingPath;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -59,6 +67,10 @@ public final class AppUI extends UITemplate {
 
         super.setResourcePaths(applicationTemplate);
         scrnshotPath = String.join(SEPARATOR, iconsPath, manager.getPropertyValue(SCREENSHOT_ICON.name()));
+        settingPath = String.join(SEPARATOR, iconsPath, manager.getPropertyValue(SETTING_ICON.name()));
+        settingButton = new Button(null, new ImageView(new Image(getClass().getResourceAsStream(settingPath))));
+
+
     }
 
     @Override
@@ -78,7 +90,6 @@ public final class AppUI extends UITemplate {
         loadButton.setOnAction(e -> applicationTemplate.getActionComponent().handleLoadRequest());
         exitButton.setOnAction(e -> applicationTemplate.getActionComponent().handleExitRequest());
         printButton.setOnAction(e -> applicationTemplate.getActionComponent().handlePrintRequest());
-
         scrnshotButton.setOnAction(e -> {
             try{
                 ((AppActions) applicationTemplate.getActionComponent()).handleScreenshotRequest();
@@ -154,7 +165,9 @@ public final class AppUI extends UITemplate {
     }
 
     public void startingTextArea(){
+        splitBox2.getChildren().clear();
         VBox labelBox = new VBox();
+        labelBox.getChildren().clear();
         textArea.setPrefWidth(400);
         textArea.setPrefRowCount(10);
         //labelBox.setAlignment(Pos.CENTER);
@@ -170,13 +183,47 @@ public final class AppUI extends UITemplate {
 
 
     public void addAlgos(){
+        VBox stringBox = new VBox();
+        algoBox = new VBox();
+        algoBox.getChildren().clear();
+        String labelString = "Total instances: " + ((AppData) applicationTemplate.getDataComponent()).getInstance()
+                + "\nTotal Labels: " +  ((AppData) applicationTemplate.getDataComponent()).getLabels() + "\nLabels: \n";
+        for(String s: ((AppData) applicationTemplate.getDataComponent()).getallLabels()) {
+            labelString += "\t" + s + "\n";
+        }
+        Label instanceBox = new Label(labelString);
+//        algoBox.setAlignment(Pos.BOTTOM_LEFT);
+//        algoBox.setPrefWidth(100);
+//        algoBox.setPrefHeight(100);
+        classification.setPrefSize(150,20);
+        clustering.setPrefSize(150,20);
 
+        if(((AppData) applicationTemplate.getDataComponent()).getLabels() == 2)
+            algoBox.getChildren().addAll(classification, clustering);
+        else
+            algoBox.getChildren().addAll(clustering);
+        splitBox2.getChildren().addAll(instanceBox, algoBox);
+        setAlgorithmActions();
+    }
+
+    public void setAlgorithmActions(){
+        classification.setOnAction(event -> ((AppActions) applicationTemplate.getActionComponent()).handleClassificationRequest());
+        clustering.setOnAction(event -> ((AppActions) applicationTemplate.getActionComponent()).handleClusteringRequest());
+    }
+
+
+    public void showAlgorithms(){
+        algoBox.getChildren().clear();
+        HBox algorithmBox = new HBox();
+        settingButton.setPrefSize(5,5);
+        algorithmBox.getChildren().addAll(clusteringAlg1, settingButton);
+        algoBox.getChildren().addAll(algorithmBox);
     }
 
 
     public void setTextAreaActions() {
         textArea.textProperty().addListener(observable -> {
-            if(((AppData) applicationTemplate.getDataComponent()).checkTen(textArea.getText())){
+            if(((AppData) applicationTemplate.getDataComponent()).checkTen(textArea.getText())==false){
                 ((AppData) applicationTemplate.getDataComponent()).makeTen(textArea.getText());
             }
         });
@@ -196,7 +243,7 @@ public final class AppUI extends UITemplate {
                         scrnshotButton.setDisable(true);
                     }
                 }
-                scrnshotButton.setDisable(false);
+                //scrnshotButton.setDisable(false);
             } catch (IndexOutOfBoundsException e) {
                 System.err.println(newValue);
             }
@@ -220,13 +267,17 @@ public final class AppUI extends UITemplate {
         });
         setTextAreaActions();
         displayButton.setOnAction(e -> {
-            clearChart();
             ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
+            textArea.setDisable(true);
+            addAlgos();
         });
     }
 
     public String getTextArea() {
         return textArea.getText();
+    }
+    public TextArea getTextAreas(){
+        return textArea;
     }
     public void setTextArea(String fileString) {
         textArea.setText(fileString);

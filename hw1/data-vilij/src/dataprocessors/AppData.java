@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import static settings.AppPropertyTypes.DATA_FILE_EXT;
@@ -32,7 +33,7 @@ public class AppData implements DataComponent {
     private ApplicationTemplate applicationTemplate;
     private int counter;
     String textAreaString = "";
-    static String fullString = "";
+    String fullString = "";
     static int lengthOfArray = 10;
 
     public AppData(ApplicationTemplate applicationTemplate) {
@@ -42,11 +43,15 @@ public class AppData implements DataComponent {
 
     @Override
     public void loadData(Path dataFilePath) {
+        fullString = "";
+        textAreaString = "";
+        ((AppUI) applicationTemplate.getUIComponent()).getTextAreas().clear();
         File loadedFile = new File(dataFilePath.toString());
         try{
             fullString = new Scanner(loadedFile).useDelimiter("//A").next();
             ((AppUI) (applicationTemplate.getUIComponent())).setTextArea(textAreaLines(fullString));
             loadData1(fullString);
+            ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().setDisable(true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -64,7 +69,7 @@ public class AppData implements DataComponent {
                 textAreaString += s+"\n";
             }
         }
-        ErrorDialog.getDialog().show("File Loaded", "The file loaded has " + (counter) + " lines, only showing first 10" );
+        ErrorDialog.getDialog().show("File Loaded", "The file loaded has " + (counter) + " (First 10 shown)" );
 
         return textAreaString;
     }
@@ -96,7 +101,7 @@ public class AppData implements DataComponent {
         TSDProcessor processor = new TSDProcessor();
         try {
             processor.processString(dataString);
-            displayData();
+
         } catch (Exception e) {
         }
         // TODO for homework 1
@@ -104,7 +109,7 @@ public class AppData implements DataComponent {
 
     public boolean saveDataHelper() {
         try {
-            processor.processString(((AppUI) (UITemplate) (applicationTemplate.getUIComponent())).getTextArea());
+            processor.processString(((AppUI) (applicationTemplate.getUIComponent())).getTextArea());
             return true;
         } catch (Exception e) {
             return false;
@@ -154,5 +159,15 @@ public class AppData implements DataComponent {
 
     public void displayData() {
         processor.toChartData(((AppUI) applicationTemplate.getUIComponent()).getChart());
+    }
+
+    public int getInstance(){
+        return processor.getInstanceCounter();
+    }
+    public int getLabels(){
+        return processor.getLabelCounter();
+    }
+    public HashSet<String> getallLabels(){
+        return processor.getLabels();
     }
 }
