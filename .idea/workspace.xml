@@ -3,17 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="51e24afb-9e84-4d1a-9170-f5a195c91f29" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/hw1/data-vilij/src/actions/AppActions.java" afterPath="$PROJECT_DIR$/hw1/data-vilij/src/actions/AppActions.java" />
-      <change beforePath="$PROJECT_DIR$/hw1/data-vilij/src/dataprocessors/AppData.java" afterPath="$PROJECT_DIR$/hw1/data-vilij/src/dataprocessors/AppData.java" />
-      <change beforePath="$PROJECT_DIR$/hw1/data-vilij/src/dataprocessors/TSDProcessor.java" afterPath="$PROJECT_DIR$/hw1/data-vilij/src/dataprocessors/TSDProcessor.java" />
-      <change beforePath="$PROJECT_DIR$/hw1/data-vilij/src/ui/AppUI.java" afterPath="$PROJECT_DIR$/hw1/data-vilij/src/ui/AppUI.java" />
-      <change beforePath="$PROJECT_DIR$/hw1/vilij/src/vilij/templates/UITemplate.java" afterPath="$PROJECT_DIR$/hw1/vilij/src/vilij/templates/UITemplate.java" />
-      <change beforePath="$PROJECT_DIR$/out/production/data-vilij/actions/AppActions.class" afterPath="$PROJECT_DIR$/out/production/data-vilij/actions/AppActions.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/data-vilij/dataprocessors/AppData.class" afterPath="$PROJECT_DIR$/out/production/data-vilij/dataprocessors/AppData.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/data-vilij/dataprocessors/TSDProcessor$InvalidDataNameException.class" afterPath="$PROJECT_DIR$/out/production/data-vilij/dataprocessors/TSDProcessor$InvalidDataNameException.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/data-vilij/dataprocessors/TSDProcessor.class" afterPath="$PROJECT_DIR$/out/production/data-vilij/dataprocessors/TSDProcessor.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/data-vilij/ui/AppUI.class" afterPath="$PROJECT_DIR$/out/production/data-vilij/ui/AppUI.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/vilij/vilij/templates/UITemplate.class" afterPath="$PROJECT_DIR$/out/production/vilij/vilij/templates/UITemplate.class" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -532,7 +521,14 @@
       <option name="project" value="LOCAL" />
       <updated>1520211285050</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Homework 4 push with toolbar set and first 3 use cases">
+      <created>1523494656300</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1523494656300</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -575,7 +571,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Homework 1 push" />
-    <option name="LAST_COMMIT_MESSAGE" value="Homework 1 push" />
+    <MESSAGE value="Homework 4 push with toolbar set and first 3 use cases" />
+    <option name="LAST_COMMIT_MESSAGE" value="Homework 4 push with toolbar set and first 3 use cases" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
