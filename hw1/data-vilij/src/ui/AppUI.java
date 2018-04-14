@@ -71,7 +71,9 @@ public final class AppUI extends UITemplate {
     private String settingPath;
     private boolean textAreaBoolean = false;
     private static String[] config1 = {"1", "1", "false", "1"};
+    private static String[] config2 = {"1", "1", "false", "1"};
     private VBox playBox = new VBox();
+    private VBox algorithmsDrop = new VBox();
 
     public LineChart<Number, Number> getChart() {
         return chart;
@@ -202,7 +204,7 @@ public final class AppUI extends UITemplate {
             algoBox.getChildren().addAll(classification, clustering);
         else
             algoBox.getChildren().addAll(clustering);
-        splitBox2.getChildren().addAll(stringBox, algoBox, playBox);
+        splitBox2.getChildren().addAll(stringBox, algoBox, algorithmsDrop, playBox);
         setAlgorithmActions();
     }
 
@@ -220,19 +222,23 @@ public final class AppUI extends UITemplate {
 
 
     public void showClusterAlgorithms() {
-        algoBox.getChildren().clear();
+        algorithmsDrop.getChildren().clear();
         HBox algorithmBox = new HBox();
         settingButton.setPrefSize(5, 5);
+        Label topAlgoLabel = new Label("CLUSTERING ALGORITHMS:-");
+        topAlgoLabel.setFont(new Font(15));
         algorithmBox.getChildren().addAll(clusteringAlg1, settingButton);
-        algoBox.getChildren().addAll(algorithmBox);
+        algorithmsDrop.getChildren().addAll(topAlgoLabel, algorithmBox);
     }
 
     public void showClassificationAlgorithms() {
-        algoBox.getChildren().clear();
+        algorithmsDrop.getChildren().clear();
         HBox algorithmBox = new HBox();
-        settingButton.setPrefSize(5, 5);
+        settingButton2.setPrefSize(5, 5);
+        Label topAlgoLabel = new Label("CLASSIFICATION ALGORITHMS:-");
+        topAlgoLabel.setFont(new Font(15));
         algorithmBox.getChildren().addAll(clusteringAlg2, settingButton2);
-        algoBox.getChildren().addAll(algorithmBox);
+        algorithmsDrop.getChildren().addAll(topAlgoLabel,algorithmBox);
 
     }
 
@@ -240,6 +246,7 @@ public final class AppUI extends UITemplate {
     public void setAlgorithmSelection(){
         clusteringAlg1.setOnMouseReleased(event -> {
             if(clusteringAlg1.isSelected()){
+                clusteringAlg2.setSelected(false);
                 playBox.getChildren().clear();
                 playBox.getChildren().addAll(new Button(("Run")));
             }
@@ -247,7 +254,8 @@ public final class AppUI extends UITemplate {
                 playBox.getChildren().clear();
         });
         clusteringAlg2.setOnMouseReleased(event -> {
-            if(clusteringAlg1.isSelected()){
+            if(clusteringAlg2.isSelected()){
+                clusteringAlg1.setSelected(false);
                 playBox.getChildren().clear();
                 playBox.getChildren().addAll(new Button(("Run")));
             }
@@ -425,14 +433,14 @@ public final class AppUI extends UITemplate {
 
         HBox hBox1 = new HBox();
 
-        iteration.setText(config1[0]);
+        iteration.setText(config2[0]);
 
 
         hBox1.getChildren().addAll(it, iteration);
 
         HBox hBox2 = new HBox();
 
-        updateInterval.setText(config1[1]);
+        updateInterval.setText(config2[1]);
 
 
         hBox2.getChildren().addAll(ut, updateInterval);
@@ -440,7 +448,7 @@ public final class AppUI extends UITemplate {
 
         HBox hBox3 = new HBox();
 
-        if (config1[2].equals("1"))
+        if (config2[2].equals("1"))
             cRun.setSelected(true);
 
 
@@ -458,12 +466,12 @@ public final class AppUI extends UITemplate {
         newWindow.setMaxWidth(500);
         newWindow.setTitle("Configuration");
         okButton.setOnAction(event -> {
-            config1[0] = iteration.getText();
-            config1[1] = updateInterval.getText();
+            config2[0] = iteration.getText();
+            config2[1] = updateInterval.getText();
             if (cRun.isSelected()) {
-                config1[2] = "1";
+                config2[2] = "1";
             } else
-                config1[2] = "0";
+                config2[2] = "0";
             newWindow.close();
         });
         newWindow.setScene(secondScene);
