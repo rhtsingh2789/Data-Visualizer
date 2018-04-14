@@ -385,9 +385,18 @@ public final class AppUI extends UITemplate {
         newWindow.setMaxWidth(500);
         newWindow.setTitle("Configuration");
         okButton.setOnAction(event -> {
-            config1[0] = iteration.getText();
-            config1[1] = updateInterval.getText();
-            config1[3] = labelsCounting.getText();
+            if(iteration.getText().charAt(0)>='1' && iteration.getText().charAt(0)<='9')
+                config1[0] = iteration.getText();
+            else
+                config1[0] = "1";
+            if(updateInterval.getText().charAt(0)>='1' && updateInterval.getText().charAt(0)<='9')
+                config1[1] = updateInterval.getText();
+            else
+                config1[1] = "1";
+            if(labelsCounting.getText().charAt(0)>='1' && labelsCounting.getText().charAt(0)<='9')
+                config1[3] = labelsCounting.getText();
+            else
+                config1[3] = "1";
             if (cRun.isSelected()) {
                 config1[2] = "1";
             } else
@@ -453,8 +462,14 @@ public final class AppUI extends UITemplate {
         newWindow.setMaxWidth(500);
         newWindow.setTitle("Configuration");
         okButton.setOnAction(event -> {
-            config2[0] = iteration.getText();
-            config2[1] = updateInterval.getText();
+            if(iteration.getText().charAt(0)>='1' && iteration.getText().charAt(0)<='9')
+                config2[0] = iteration.getText();
+            else
+                config2[0] = "1";
+            if(updateInterval.getText().charAt(0)>='1' && updateInterval.getText().charAt(0)<='9')
+                config2[1] = updateInterval.getText();
+            else
+                config2[1] = "1";
             if (cRun.isSelected()) {
                 config2[2] = "1";
             } else
