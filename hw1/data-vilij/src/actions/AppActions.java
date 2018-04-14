@@ -29,7 +29,7 @@ import static settings.AppPropertyTypes.*;
 /**
  * This is the concrete implementation of the action handlers required by the application.
  *
- * @author Ritwik Banerjee
+ * @author Rohit Singh
  */
 public final class AppActions implements ActionComponent {
 

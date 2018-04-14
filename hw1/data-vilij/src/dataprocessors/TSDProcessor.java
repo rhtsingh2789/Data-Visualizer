@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * <p>
  * A sample file in this format has been provided in the application's <code>resources/data</code> folder.
  *
- * @author Ritwik Banerjee
+ * @author Rohit Singh
  * @see XYChart
  */
 public final class TSDProcessor {

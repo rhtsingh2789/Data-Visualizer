@@ -24,7 +24,7 @@ import static settings.AppPropertyTypes.DATA_FILE_EXT_DESC;
 /**
  * This is the concrete application-specific implementation of the data component defined by the Vilij framework.
  *
- * @author Ritwik Banerjee
+ * @author Rohit Singh
  * @see DataComponent
  */
 public class AppData implements DataComponent {

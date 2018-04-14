@@ -2,14 +2,7 @@ package ui;
 
 import actions.AppActions;
 import dataprocessors.AppData;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Dimension2D;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -27,20 +20,14 @@ import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.TextField;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import static vilij.settings.PropertyTypes.*;
 
 /**
  * This is the application's user interface implementation.
  *
- * @author Ritwik Banerjee
+ * @author Rohit Singh
  */
 public final class AppUI extends UITemplate {
 
