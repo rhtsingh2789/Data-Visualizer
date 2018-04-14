@@ -101,7 +101,7 @@ public class AppData implements DataComponent {
         TSDProcessor processor = new TSDProcessor();
         try {
             processor.processString(dataString);
-
+            ((AppUI) applicationTemplate.getUIComponent()).addAlgos();
         } catch (Exception e) {
         }
         // TODO for homework 1

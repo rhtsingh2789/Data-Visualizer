@@ -35,8 +35,8 @@ public final class TSDProcessor {
     private  static Map<String, Point2D> dataPoints;
     private HashSet<String> names = new HashSet<>();
     static int counter=0;
-    static int labelCounter =0, instanceCounter=0;
-    private static HashSet<String> labels= new HashSet<String>();
+    static int labelCounter, instanceCounter;
+    private static HashSet<String> labels;
 
     static double Yvalues, minX=0, maxX, average;
 
@@ -52,6 +52,7 @@ public final class TSDProcessor {
      * @throws Exception if the input string does not follow the <code>.tsd</code> data format
      */
     public void processString(String tsdString) throws Exception {
+        labels = new HashSet<String>();
         counter = 0;
         labelCounter = 0;
         instanceCounter = 0;
@@ -65,7 +66,7 @@ public final class TSDProcessor {
                       String   label = list.get(1);
                       String[] pair  = list.get(2).split(",");
                       Point2D  point = new Point2D(Double.parseDouble(pair[0]), Double.parseDouble(pair[1]));
-                      if(labels.contains(label) == false){
+                      if(labels.contains(label) == false && !label.equals("null")){
                           labels.add(label);
                           labelCounter++;
                       }
@@ -164,9 +165,9 @@ public final class TSDProcessor {
             throw new InvalidDataNameException(name);
         }
         else {
-            instanceCounter++;
             names.add(name);
         }
+        instanceCounter++;
         return name;
     }
 

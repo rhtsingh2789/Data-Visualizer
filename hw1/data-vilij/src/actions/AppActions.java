@@ -8,6 +8,7 @@ import javafx.stage.FileChooser;
 import ui.AppUI;
 import vilij.components.ActionComponent;
 import vilij.components.ConfirmationDialog;
+import vilij.components.Dialog;
 import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 
@@ -53,10 +54,12 @@ public final class AppActions implements ActionComponent {
     @Override
     public void handleNewRequest() {
         try {
+            if(((AppUI) applicationTemplate.getUIComponent()).getTextAreas().getText().isEmpty() == false)
             this.promptToSave();
             ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
             ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().clear();
             ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().setDisable(false);
+            ((AppUI) (applicationTemplate.getUIComponent())).setTextAreaActions2();
         } catch (IOException e) {
         }
 
@@ -83,6 +86,8 @@ public final class AppActions implements ActionComponent {
         }        // TODO: NOT A PART OF HW 1
         ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
         ((AppUI) applicationTemplate.getUIComponent()).addAlgos();
+        ((AppUI) applicationTemplate.getUIComponent()).setTextAreaBoolean(true);
+        ((AppUI) applicationTemplate.getUIComponent()).disableDone();
     }
 
     @Override
@@ -161,10 +166,14 @@ public final class AppActions implements ActionComponent {
     }
 
     public void handleClassificationRequest() {
-
+        ((AppUI) applicationTemplate.getUIComponent()).showClassificationAlgorithms();
     }
 
     public void handleClusteringRequest() {
-        ((AppUI) applicationTemplate.getUIComponent()).showAlgorithms();
+        ((AppUI) applicationTemplate.getUIComponent()).showClusterAlgorithms();
+    }
+
+    public Path getDataFilePath(){
+        return dataFilePath;
     }
 }
