@@ -22,7 +22,7 @@ import static vilij.settings.PropertyTypes.*;
  * here at the framework-level does not instantiate an actual workspace (which must be done by any application using
  * this framework).
  *
- * @author Ritwik Banerjee
+ * @author Rohit Singh
  */
 public class UITemplate implements UIComponent {
 

@@ -6,6 +6,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Tooltip;
 import vilij.components.ErrorDialog;
 
+import java.awt.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -38,8 +39,18 @@ public final class TSDProcessor {
     static int labelCounter, instanceCounter;
     private static HashSet<String> labels;
 
-    static double Yvalues, minX=0, maxX, average;
+    static double Yvalues;
 
+    static double minX=0;
+    static double maxX;
+    static double average;
+
+    public  double getMaxX() {
+        return maxX;
+    }
+    public  double getMinX() {
+        return minX;
+    }
     public TSDProcessor() {
         dataLabels = new HashMap<>();
         dataPoints = new HashMap<>();
@@ -56,6 +67,7 @@ public final class TSDProcessor {
         counter = 0;
         labelCounter = 0;
         instanceCounter = 0;
+        Yvalues = 0;
         AtomicBoolean hadAnError   = new AtomicBoolean(false);
         StringBuilder errorMessage = new StringBuilder();
         Stream.of(tsdString.split("\n"))
@@ -106,6 +118,9 @@ public final class TSDProcessor {
      */
     void toChartData(XYChart<Number, Number> chart) {
         Set<String> labels = new HashSet<>(dataLabels.values());
+        Yvalues = 0;
+        minX=0;
+        maxX=0;
         for (String label : labels) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(label);
@@ -137,13 +152,14 @@ public final class TSDProcessor {
                 }
             }
         }
-        average=(Yvalues/counter);
-        XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
-        series1.setName("Average");
-        series1.getData().add(new XYChart.Data<>(minX, average));
-        series1.getData().add(new XYChart.Data<>(maxX, average));
-
-        chart.getData().add(series1);
+//        average=(Yvalues/instanceCounter);
+//        XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
+//        series1.setName("Average");
+//        //Rectangle rectangle = new Rectangle();
+//        series1.getData().add(new XYChart.Data<>(minX, average));
+//        series1.getData().add(new XYChart.Data<>(maxX, average));
+//
+//        chart.getData().add(series1);
     }
 
     private String getKeyFromValue(Map<String, Point2D> dataPoints, Point2D point) {

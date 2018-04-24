@@ -29,6 +29,10 @@ import static settings.AppPropertyTypes.DATA_FILE_EXT_DESC;
  */
 public class AppData implements DataComponent {
 
+    public TSDProcessor getProcessor() {
+        return processor;
+    }
+
     private TSDProcessor        processor;
     private ApplicationTemplate applicationTemplate;
     private int counter;
@@ -93,6 +97,7 @@ public class AppData implements DataComponent {
         TSDProcessor processor = new TSDProcessor();
         try {
             processor.processString(dataString);
+            displayData();
         } catch (Exception e) {
         }
         // TODO for homework 1
@@ -101,6 +106,7 @@ public class AppData implements DataComponent {
         TSDProcessor processor = new TSDProcessor();
         try {
             processor.processString(dataString);
+            displayData();
             ((AppUI) applicationTemplate.getUIComponent()).addAlgos();
         } catch (Exception e) {
         }

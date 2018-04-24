@@ -1,6 +1,9 @@
 package ui;
 
 import actions.AppActions;
+import algorithms.Classifier;
+import classifier.RandomClassifier;
+import data.DataSet;
 import dataprocessors.AppData;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -38,7 +41,7 @@ public final class AppUI extends UITemplate {
 
     @SuppressWarnings("FieldCanBeLocal")
     private Button scrnshotButton; // toolbar button to take a screenshot of the data
-    private LineChart<Number, Number> chart;         // the chart where data will be displayed
+    private static LineChart<Number, Number> chart;         // the chart where data will be displayed
     private Button displayButton = new Button();  // workspace button to display data on the chart
     private TextArea textArea = new TextArea();       // text area for new data input
     private boolean hasNewText;     // whether or not the text area has any new data since last display
@@ -55,16 +58,15 @@ public final class AppUI extends UITemplate {
     private RadioButton clusteringAlg2 = new RadioButton("Algorithm 1");
     private Button settingButton;
     private Button settingButton2;
+    private Button run = new Button("Run");
     private String settingPath;
     private boolean textAreaBoolean = false;
     private static String[] config1 = {"1", "1", "false", "1"};
     private static String[] config2 = {"1", "1", "false", "1"};
     private VBox playBox = new VBox();
     private VBox algorithmsDrop = new VBox();
+    private CheckBox cRun;
 
-    public LineChart<Number, Number> getChart() {
-        return chart;
-    }
 
     public AppUI(Stage primaryStage, ApplicationTemplate applicationTemplate) {
         super(primaryStage, applicationTemplate);
@@ -137,7 +139,8 @@ public final class AppUI extends UITemplate {
         chart = new LineChart<Number, Number>(new NumberAxis(), new NumberAxis());
         chart.setTitle("Plot");
         chart.setPrefWidth(600);
-
+        chart.setVerticalZeroLineVisible(false);
+        chart.setHorizontalZeroLineVisible(false);
         chart.setHorizontalGridLinesVisible(false);
         chart.setVerticalGridLinesVisible(false);
 
@@ -204,6 +207,15 @@ public final class AppUI extends UITemplate {
         settingButton2.setOnAction(event -> {
             createDialog1();
         });
+        run.setOnAction(event -> {
+            Classifier classifier = new RandomClassifier(new DataSet(),Integer.parseInt(config2[0]),Integer.parseInt(config2[1]),cRun.isSelected(), applicationTemplate); //CHANGE THIS TO CHANGE
+            Thread thread = new Thread(classifier);
+            try{
+                thread.start();
+            }catch(Exception e1){
+
+            }
+        });
         setAlgorithmSelection();
     }
 
@@ -235,7 +247,7 @@ public final class AppUI extends UITemplate {
             if(clusteringAlg1.isSelected()){
                 clusteringAlg2.setSelected(false);
                 playBox.getChildren().clear();
-                playBox.getChildren().addAll(new Button(("Run")));
+                playBox.getChildren().addAll(run);
             }
             else
                 playBox.getChildren().clear();
@@ -244,7 +256,7 @@ public final class AppUI extends UITemplate {
             if(clusteringAlg2.isSelected()){
                 clusteringAlg1.setSelected(false);
                 playBox.getChildren().clear();
-                playBox.getChildren().addAll(new Button(("Run")));
+                playBox.getChildren().addAll(run);
             }
             else
                 playBox.getChildren().clear();
@@ -293,6 +305,7 @@ public final class AppUI extends UITemplate {
     private void setWorkspaceActions() {
         setTextAreaActions();
         displayButton.setOnAction(e -> {
+            clearChart();
             if (!textAreaBoolean) {
                 textArea.setDisable(true);
                 textAreaBoolean = true;
@@ -301,6 +314,7 @@ public final class AppUI extends UITemplate {
                 textAreaBoolean = false;
             }
             ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
+            ((AppData) applicationTemplate.getDataComponent()).displayData();
         });
     }
 
@@ -323,6 +337,12 @@ public final class AppUI extends UITemplate {
     public void disableDone() {
         displayButton.setDisable(true);
     }
+    public void enableDone() {
+        displayButton.setDisable(false);
+    }
+    public LineChart<Number, Number> getChart(){
+        return chart;
+    }
 
     public void createDialog() {
         TextArea iteration = new TextArea();
@@ -334,7 +354,7 @@ public final class AppUI extends UITemplate {
         iteration.setPrefWidth(30);
         updateInterval.setPrefWidth(30);
         iteration.setText(config1[0]);
-        CheckBox cRun = new CheckBox("Continuous Run?");
+        cRun = new CheckBox("Continuous Run?");
         Label it = new Label("Iterations: \t");
         Label ut = new Label("Update Interval: \t");
         Label labelCount = new Label("Labels desired: ");
@@ -398,9 +418,9 @@ public final class AppUI extends UITemplate {
             else
                 config1[3] = "1";
             if (cRun.isSelected()) {
-                config1[2] = "1";
+                config1[2] = "true";
             } else
-                config1[2] = "0";
+                config1[2] = "false";
             newWindow.close();
         });
         newWindow.setScene(secondScene);
@@ -418,7 +438,7 @@ public final class AppUI extends UITemplate {
         iteration.setPrefWidth(30);
         updateInterval.setPrefWidth(30);
         iteration.setText(config1[0]);
-        CheckBox cRun = new CheckBox("Continuous Run?");
+        cRun = new CheckBox("Continuous Run?");
         Label it = new Label("Iterations: \t");
         Label ut = new Label("Update Interval: \t");
 
@@ -471,9 +491,9 @@ public final class AppUI extends UITemplate {
             else
                 config2[1] = "1";
             if (cRun.isSelected()) {
-                config2[2] = "1";
+                config2[2] = "true";
             } else
-                config2[2] = "0";
+                config2[2] = "false";
             newWindow.close();
         });
         newWindow.setScene(secondScene);

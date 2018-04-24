@@ -56,10 +56,12 @@ public final class AppActions implements ActionComponent {
         try {
             if(((AppUI) applicationTemplate.getUIComponent()).getTextAreas().getText().isEmpty() == false)
             this.promptToSave();
+
             ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
             ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().clear();
             ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().setDisable(false);
             ((AppUI) (applicationTemplate.getUIComponent())).setTextAreaActions2();
+            ((AppUI) (applicationTemplate.getUIComponent())).enableDone();
         } catch (IOException e) {
         }
 
