@@ -24,9 +24,11 @@ public enum AppPropertyTypes {
 
     /* application-specific message titles */
     SAVE_UNSAVED_WORK_TITLE,
+    ALGORITHM_RUNNING_TITLE,
 
     /* application-specific messages */
     SAVE_UNSAVED_WORK,
+    ALGORITHM_END,
 
     /* application-specific parameters */
     DATA_FILE_EXT,

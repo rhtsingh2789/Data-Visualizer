@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.scene.chart.XYChart;
 import javafx.scene.shape.Rectangle;
 import ui.AppUI;
+import vilij.components.ErrorDialog;
 import vilij.templates.ApplicationTemplate;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public class RandomClassifier extends Classifier {
     @SuppressWarnings("FieldCanBeLocal")
     // this mock classifier doesn't actually use the data, but a real classifier will
     //private DataSet dataset;
-    private static XYChart.Series<Number, Number> randomSeries = new XYChart.Series<Number, Number>();
+    private static XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
     private ApplicationTemplate applicationTemplate;
     private final int maxIterations;
     private final int updateInterval;
@@ -31,9 +32,6 @@ public class RandomClassifier extends Classifier {
     private XYChart.Data dataA;
     private XYChart.Data dataB;
     private DataSet dataset;
-    //  private Object lock = new Object();
-
-    // currently, this value does not change after instantiation
     private final AtomicBoolean tocontinue;
 
     @Override
@@ -67,15 +65,11 @@ public class RandomClassifier extends Classifier {
     public void run() {
         Platform.runLater(this::setChartLine);
         for (int i = 1; i <= maxIterations && tocontinue(); i++) {
-            ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
             int xCoefficient =  new Long(-1 * Math.round((2 * RAND.nextDouble() - 1) * 10)).intValue();
             int yCoefficient = 10;
             int constant     = RAND.nextInt(11);
 
-            // this is the real output of the classifier
             output = Arrays.asList(xCoefficient, yCoefficient, constant);
-            // everything below is just for internal viewing of how the output is changing
-            // in the final project, such changes will be dynamically visible in the UI
             if (i % updateInterval == 0) {
                 System.out.printf("Iteration number %d: ", i);
                 Platform.runLater(this::setYValues);
@@ -83,8 +77,8 @@ public class RandomClassifier extends Classifier {
             }
             if (i > maxIterations * .6 && RAND.nextDouble() < 0.05) {
                 System.out.printf("Iteration number %d: ", i);
-                flush();
                 Platform.runLater(this::setYValues);
+                flush();
                 ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).setAlgoRunning(false);
                 ((AppUI)applicationTemplate.getUIComponent()).setStartThread(false);
@@ -97,7 +91,6 @@ public class RandomClassifier extends Classifier {
             }
         }
         if (!tocontinue()) {
-            ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
             for (int i = 1; i <= maxIterations; i++) {
                 int xCoefficient =  new Long(-1 * Math.round((2 * RAND.nextDouble() - 1) * 10)).intValue();
                 int yCoefficient = 10;
@@ -123,16 +116,10 @@ public class RandomClassifier extends Classifier {
                     flush();
                     break;
                 }
-              /*  synchronized (lock) {
-                    try {
-                        lock.wait(); // Will block until lock.notify() is called on another thread.
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } */
 
             }
         }
+        ((AppUI)applicationTemplate.getUIComponent()).setAlgoRunning(false);
         ((AppUI)applicationTemplate.getUIComponent()).setStartThread(false);
         ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
         ((AppUI)applicationTemplate.getUIComponent()).getRun().setDisable(false);
@@ -143,29 +130,20 @@ public class RandomClassifier extends Classifier {
         System.out.printf("%d\t%d\t%d%n", output.get(0), output.get(1), output.get(2));
     }
 
-    /**
-     * A placeholder main method to just make sure this code runs smoothly
-     */
-   /* public static void main(String... args) throws IOException {
-        DataSet dataset = DataSet.fromTSDFile(Paths.get("/path/to/some-data.tsd"));
-        RandomClassifier classifier = new RandomClassifier(dataset, 100, 5, true);
-        classifier.run(); // no multithreading yet
-    } */
-
     public void setChartLine() {
         TSDProcessor processor = ((AppData)applicationTemplate.getDataComponent()).getProcessor();
-        randomSeries = new XYChart.Series<Number, Number>();
-        randomSeries.setName("Random Line");
+        series = new XYChart.Series<Number, Number>();
+        series.setName("Random Line");
         dataA = new XYChart.Data(processor.getMinX(),minY);
         dataB = new XYChart.Data(processor.getMaxX(), maxY);
-        Rectangle rect = new Rectangle(0, 0);
-        rect.setVisible(false);
-        Rectangle rectangle = new Rectangle(0, 0);
-        rectangle.setVisible(false);
-        dataA.setNode(rect);
-        dataB.setNode(rectangle);
-        randomSeries.getData().addAll(dataA, dataB);
-        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().add(randomSeries);
+        Rectangle square = new Rectangle(0, 0);
+        square.setVisible(false);
+        Rectangle wrekkttt = new Rectangle(0, 0);
+        wrekkttt.setVisible(false);
+        dataA.setNode(square);
+        dataB.setNode(wrekkttt);
+        series.getData().addAll(dataA, dataB);
+        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().add(series);
     }
 
     public void setYValues(){
@@ -178,7 +156,7 @@ public class RandomClassifier extends Classifier {
     }
 
     public static void clearSeries(){
-        randomSeries.getData().clear();
+        series.getData().clear();
     }
 }
 //package classifier;

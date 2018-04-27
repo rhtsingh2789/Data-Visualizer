@@ -19,6 +19,8 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import static settings.AppPropertyTypes.*;
+
+import vilij.components.ErrorDialog;
 import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
@@ -58,7 +60,7 @@ public final class AppUI extends UITemplate {
     private RadioButton clusteringAlg2 = new RadioButton("Algorithm 1");
     private Button settingButton;
     private Button settingButton2;
-    private boolean algoRunning;
+    private boolean algoRunning= false;
 
 
 
@@ -216,6 +218,10 @@ public final class AppUI extends UITemplate {
             createDialog1();
         });
         run.setOnAction(e -> {
+            if(!cRun.isSelected() && !startThread){
+                ErrorDialog.getDialog().show(
+                        "Click continuously", "Click run over and over until max iterations");
+            }
             if(!startThread) {
                 startThread = true;
                 RandomClassifier.clearSeries();
@@ -223,6 +229,7 @@ public final class AppUI extends UITemplate {
                 thread = new Thread(classifier);
                 try {
                     run.setDisable(true);
+                    scrnshotButton.setDisable(true);
                     algoRunning = true;
                     thread.start();
                 }
@@ -232,12 +239,13 @@ public final class AppUI extends UITemplate {
             else {
                 synchronized (thread) {
                     try {
+                        scrnshotButton.setDisable(true);
                         thread.interrupt();
                     }
                     catch (Exception r) {
                     }
                 }
-            }
+                }
         });
         setAlgorithmSelection();
     }
@@ -534,6 +542,12 @@ public final class AppUI extends UITemplate {
 
     public void setStartThread(boolean startThread) {
         this.startThread = startThread;
+    }
+    public boolean isAlgoRunning() {
+        return algoRunning;
+    }
+    public static void showDone(){
+            ErrorDialog.getDialog().show("Algorithm Ended", "Algorithm Ended");
     }
 }
 

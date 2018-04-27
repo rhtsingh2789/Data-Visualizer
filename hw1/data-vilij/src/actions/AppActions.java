@@ -38,7 +38,7 @@ public final class AppActions implements ActionComponent {
 
     /** Path to the data file currently active. */
     Path  dataFilePath;
-    SimpleBooleanProperty isUnsaved;
+    boolean isUnsaved;
 
 
     public void setdataFilePath(Path dataFilePath){
@@ -46,7 +46,7 @@ public final class AppActions implements ActionComponent {
     }
     public AppActions(ApplicationTemplate applicationTemplate) {
         this.applicationTemplate = applicationTemplate;
-        this.isUnsaved = new SimpleBooleanProperty(false);
+        this.isUnsaved = false;
     }
 
 
@@ -55,7 +55,7 @@ public final class AppActions implements ActionComponent {
     public void handleNewRequest() {
         try {
             if(((AppUI) applicationTemplate.getUIComponent()).getTextAreas().getText().isEmpty() == false)
-            this.promptToSave();
+                this.promptToSave();
 
             ((AppUI) applicationTemplate.getUIComponent()).startingTextArea();
             ((AppUI) (applicationTemplate.getUIComponent())).getTextAreas().clear();
@@ -94,7 +94,29 @@ public final class AppActions implements ActionComponent {
 
     @Override
     public void handleExitRequest() {
-        System.exit(0);
+        if(!((AppUI) applicationTemplate.getUIComponent()).isAlgoRunning() && !isUnsaved)
+            System.exit(0);
+        else if(!((AppUI) applicationTemplate.getUIComponent()).isAlgoRunning() && isUnsaved){
+            try {
+                promptToSave();
+            } catch (IOException e) {
+
+            }
+        }
+        else{
+            PropertyManager manager= applicationTemplate.manager;
+            ConfirmationDialog.getDialog().show(manager.getPropertyValue(ALGORITHM_RUNNING_TITLE.name()),
+                    manager.getPropertyValue(ALGORITHM_END.name()));
+
+            try {
+                if (ConfirmationDialog.getDialog().getSelectedOption().equals(ConfirmationDialog.Option.YES)) {
+                    System.exit(0);
+
+                } else if (ConfirmationDialog.getDialog().getSelectedOption() == ConfirmationDialog.Option.NO) {
+                }
+            }catch (Exception e){}
+        }
+
         // TODO for homework 1
     }
 
@@ -118,7 +140,7 @@ public final class AppActions implements ActionComponent {
         }
         // TODO: NOT A PART OF HW 1
     }
-    public void setIsUnsavedProperty(boolean property) { isUnsaved.set(property); }
+    public void setIsUnsavedProperty(boolean property) { isUnsaved= property; }
 
     /**
      * This helper method verifies that the user really wants to save their unsaved work, which they might not want to
@@ -159,11 +181,6 @@ public final class AppActions implements ActionComponent {
         }catch (Exception e){
             System.out.println();
         }
-
-
-
-        // TODO for homework 1
-        // TODO remove the placeholder line below after you have implemented this method
         return false;
     }
 
