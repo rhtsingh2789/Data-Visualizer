@@ -58,6 +58,11 @@ public final class AppUI extends UITemplate {
     private RadioButton clusteringAlg2 = new RadioButton("Algorithm 1");
     private Button settingButton;
     private Button settingButton2;
+    private boolean algoRunning;
+
+
+
+
     private Button run = new Button("Run");
     private String settingPath;
     private boolean textAreaBoolean = false;
@@ -65,7 +70,10 @@ public final class AppUI extends UITemplate {
     private static String[] config2 = {"1", "1", "false", "1"};
     private VBox playBox = new VBox();
     private VBox algorithmsDrop = new VBox();
-    private CheckBox cRun;
+    private CheckBox cRun = new CheckBox("Continuous Run?");
+    private DataSet dataSet = new DataSet();
+    private boolean startThread = false;
+    private Thread thread;
 
 
     public AppUI(Stage primaryStage, ApplicationTemplate applicationTemplate) {
@@ -207,13 +215,28 @@ public final class AppUI extends UITemplate {
         settingButton2.setOnAction(event -> {
             createDialog1();
         });
-        run.setOnAction(event -> {
-            Classifier classifier = new RandomClassifier(new DataSet(),Integer.parseInt(config2[0]),Integer.parseInt(config2[1]),cRun.isSelected(), applicationTemplate); //CHANGE THIS TO CHANGE
-            Thread thread = new Thread(classifier);
-            try{
-                thread.start();
-            }catch(Exception e1){
-
+        run.setOnAction(e -> {
+            if(!startThread) {
+                startThread = true;
+                RandomClassifier.clearSeries();
+                RandomClassifier classifier = new RandomClassifier(dataSet, Integer.parseInt(config2[0]), Integer.parseInt(config2[1]), cRun.isSelected(), applicationTemplate);
+                thread = new Thread(classifier);
+                try {
+                    run.setDisable(true);
+                    algoRunning = true;
+                    thread.start();
+                }
+                catch (Exception ex) {
+                }
+            }
+            else {
+                synchronized (thread) {
+                    try {
+                        thread.interrupt();
+                    }
+                    catch (Exception r) {
+                    }
+                }
             }
         });
         setAlgorithmSelection();
@@ -301,7 +324,9 @@ public final class AppUI extends UITemplate {
         saveButton.setDisable(true);
     }
 
-
+    public Button getRun() {
+        return run;
+    }
     private void setWorkspaceActions() {
         setTextAreaActions();
         displayButton.setOnAction(e -> {
@@ -354,7 +379,6 @@ public final class AppUI extends UITemplate {
         iteration.setPrefWidth(30);
         updateInterval.setPrefWidth(30);
         iteration.setText(config1[0]);
-        cRun = new CheckBox("Continuous Run?");
         Label it = new Label("Iterations: \t");
         Label ut = new Label("Update Interval: \t");
         Label labelCount = new Label("Labels desired: ");
@@ -438,7 +462,6 @@ public final class AppUI extends UITemplate {
         iteration.setPrefWidth(30);
         updateInterval.setPrefWidth(30);
         iteration.setText(config1[0]);
-        cRun = new CheckBox("Continuous Run?");
         Label it = new Label("Iterations: \t");
         Label ut = new Label("Update Interval: \t");
 
@@ -464,7 +487,7 @@ public final class AppUI extends UITemplate {
 
         HBox hBox3 = new HBox();
 
-        if (config2[2].equals("1"))
+        if (config2[2].equals("true"))
             cRun.setSelected(true);
 
 
@@ -499,6 +522,18 @@ public final class AppUI extends UITemplate {
         newWindow.setScene(secondScene);
         newWindow.showAndWait();
 
+    }
+
+    public Button getScrnshotButton() {
+        return scrnshotButton;
+    }
+
+    public void setAlgoRunning(boolean algoRunning) {
+        this.algoRunning = algoRunning;
+    }
+
+    public void setStartThread(boolean startThread) {
+        this.startThread = startThread;
     }
 }
 

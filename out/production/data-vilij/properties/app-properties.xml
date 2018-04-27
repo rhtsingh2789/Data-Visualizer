@@ -15,7 +15,7 @@ functionality within the main workspace. -->
 
         <!-- WARNING MESSAGES -->
         <property name="EXIT_WHILE_RUNNING_WARNING"
-                  value="An algorithm is running. If you exit now, all unsaved changes will be lost. Are you sure?"/>
+                  value="An classifier is running. If you exit now, all unsaved changes will be lost. Are you sure?"/>
 
         <!-- ERROR MESSAGES -->
         <property name="RESOURCE_SUBDIR_NOT_FOUND" value="Directory not found under resources."/>
