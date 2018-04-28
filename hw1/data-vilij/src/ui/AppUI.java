@@ -242,7 +242,7 @@ public final class AppUI extends UITemplate {
                         scrnshotButton.setDisable(true);
                         thread.interrupt();
                     }
-                    catch (Exception r) {
+                    catch (Exception exe) {
                     }
                 }
                 }
