@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.scene.chart.XYChart;
 import javafx.scene.shape.Rectangle;
 import ui.AppUI;
-import vilij.components.ErrorDialog;
 import vilij.templates.ApplicationTemplate;
 
 import java.util.Arrays;
@@ -29,8 +28,8 @@ public class RandomClassifier extends Classifier {
     private final int updateInterval;
     private double minY;
     private double maxY;
-    private XYChart.Data dataA;
-    private XYChart.Data dataB;
+    private XYChart.Data pointA;
+    private XYChart.Data pointB;
     private DataSet dataset;
     private final AtomicBoolean tocontinue;
 
@@ -101,14 +100,13 @@ public class RandomClassifier extends Classifier {
                     System.out.printf("Iteration number %d: ", i);
                     Platform.runLater(this::setYValues);
                     flush();
-                    synchronized (this) {
-                        try {
+                    try {
                             ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
                             ((AppUI)applicationTemplate.getUIComponent()).getRun().setDisable(false);
-                            this.wait();
-                        } catch (InterruptedException e) {
-                        }
+                            Thread.sleep(Integer.MAX_VALUE);
+                    } catch (InterruptedException e) {
                     }
+
                 }
                 if (i > maxIterations * .6 && RAND.nextDouble() < 0.05) {
                     System.out.printf("Iteration number %d: ", i);
@@ -133,13 +131,13 @@ public class RandomClassifier extends Classifier {
         TSDProcessor processor = ((AppData)applicationTemplate.getDataComponent()).getProcessor();
         series = new XYChart.Series<Number, Number>();
         series.setName("Algo Line");
-        dataA = new XYChart.Data(processor.getMinX(),minY);
-        dataB = new XYChart.Data(processor.getMaxX(), maxY);
+        pointA = new XYChart.Data(processor.getMinX(),minY);
+        pointB = new XYChart.Data(processor.getMaxX(), maxY);
         Rectangle square = new Rectangle(0, 0);
         Rectangle wrekkttt = new Rectangle(0, 0);
-        dataA.setNode(square);
-        dataB.setNode(wrekkttt);
-        series.getData().addAll(dataA, dataB);
+        pointA.setNode(square);
+        pointB.setNode(wrekkttt);
+        series.getData().addAll(pointA, pointB);
         ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().add(series);
     }
 
@@ -147,8 +145,8 @@ public class RandomClassifier extends Classifier {
         TSDProcessor processor = ((AppData) applicationTemplate.getDataComponent()).getProcessor();;
          minY = (-output.get(2)-(processor.getMinX()*output.get(0)))/output.get(1);
          maxY = (-output.get(2)-(processor.getMaxX()*output.get(0)))/output.get(1);
-         dataA.setYValue(minY);
-         dataB.setYValue(maxY);
+         pointA.setYValue(minY);
+         pointB.setYValue(maxY);
 
     }
 

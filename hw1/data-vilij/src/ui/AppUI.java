@@ -237,14 +237,12 @@ public final class AppUI extends UITemplate {
                 }
             }
             else {
-                synchronized (thread) {
                     try {
                         scrnshotButton.setDisable(true);
                         thread.interrupt();
                     }
                     catch (Exception exe) {
                     }
-                }
                 }
         });
         setAlgorithmSelection();
