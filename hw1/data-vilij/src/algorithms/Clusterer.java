@@ -1,4 +1,4 @@
-package clustering;
+package algorithms;
 import algorithms.Algorithm;
 /**
  * @author Ritwik Banerjee

@@ -1,5 +1,4 @@
-package classifier;
-import algorithms.Classifier;
+package algorithms;
 import data.DataSet;
 import dataprocessors.AppData;
 import dataprocessors.TSDProcessor;

@@ -152,6 +152,7 @@ public final class TSDProcessor {
                 }
             }
         }
+
 //        average=(Yvalues/instanceCounter);
 //        XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
 //        series1.setName("Average");

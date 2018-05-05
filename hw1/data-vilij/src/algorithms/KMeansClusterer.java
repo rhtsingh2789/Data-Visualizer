@@ -1,10 +1,13 @@
-package clustering;
+package algorithms;
+import algorithms.Clusterer;
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 
-import java.io.IOException;
 import data.DataSet;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import javafx.scene.chart.XYChart;
+import ui.AppUI;
+import vilij.templates.ApplicationTemplate;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,14 +25,18 @@ public class KMeansClusterer extends Clusterer {
     private final int           maxIterations;
     private final int           updateInterval;
     private final AtomicBoolean tocontinue;
+    private ApplicationTemplate applicationTemplate;
+    private boolean             continuousrun;
 
 
-    public KMeansClusterer(DataSet dataset, int maxIterations, int updateInterval, int numberOfClusters) {
+    public KMeansClusterer(DataSet dataset, int maxIterations, int updateInterval, int numberOfClusters, boolean continuousrun, ApplicationTemplate applicationTemplate) {
         super(numberOfClusters);
         this.dataset = dataset;
         this.maxIterations = maxIterations;
         this.updateInterval = updateInterval;
         this.tocontinue = new AtomicBoolean(false);
+        this.continuousrun = continuousrun;
+        this.applicationTemplate = applicationTemplate;
     }
 
     @Override
@@ -45,11 +52,35 @@ public class KMeansClusterer extends Clusterer {
     public void run() {
         initializeCentroids();
         int iteration = 0;
-        while (iteration++ < maxIterations & tocontinue.get()) {
+        while (iteration++ < maxIterations && continuousrun && tocontinue()) {
             assignLabels();
+            Platform.runLater(this :: clearingChart);
+            Platform.runLater(this::toChart);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
             recomputeCentroids();
         }
+        while (iteration++ < maxIterations && !continuousrun) {
+            assignLabels();
+            Platform.runLater(this::clearingChart);
+            Platform.runLater(this::toChart);
+            try {
+                ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getRun().setDisable(false);
+                Thread.sleep(Integer.MAX_VALUE);
+            } catch (Exception ex) {
+
+            }
+            recomputeCentroids();
+        }
+        ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
+        ((AppUI)applicationTemplate.getUIComponent()).setAlgoRunning(false);
+        ((AppUI)applicationTemplate.getUIComponent()).setStartThread(false);
+        ((AppUI)applicationTemplate.getUIComponent()).getRun().setDisable(false);
     }
+
 
     private void initializeCentroids() {
         Set<String>  chosen        = new HashSet<>();
@@ -58,7 +89,7 @@ public class KMeansClusterer extends Clusterer {
         while (chosen.size() < numberOfClusters) {
             int i = r.nextInt(instanceNames.size());
             while (chosen.contains(instanceNames.get(i)))
-                ++i;
+                i = (++i % instanceNames.size());
             chosen.add(instanceNames.get(i));
         }
         centroids = chosen.stream().map(name -> dataset.getLocations().get(name)).collect(Collectors.toList());
@@ -105,4 +136,22 @@ public class KMeansClusterer extends Clusterer {
         return Math.sqrt(Math.pow(p.getX() - q.getX(), 2) + Math.pow(p.getY() - q.getY(), 2));
     }
 
+    private void toChart(){
+        Set<String> labels = new HashSet<>(dataset.getLabels().values());
+        for (String label : labels) {
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            series.setName(label);
+            dataset.getLabels().entrySet().stream().filter(entry -> entry.getValue().equals(label)).forEach(entry -> {
+                Point2D point = dataset.getLocations().get(entry.getKey());
+                XYChart.Data<Number, Number> points = new XYChart.Data<>(point.getX(), point.getY());
+                series.getData().add(points);
+                });
+            ((AppUI) applicationTemplate.getUIComponent()).getChart().getData().add(series);
+            series.getNode().setStyle("-fx-stroke: transparent");
+        }
+    }
+
+    private void clearingChart(){
+        ((AppUI) applicationTemplate.getUIComponent()).clearChart();
+    }
 }

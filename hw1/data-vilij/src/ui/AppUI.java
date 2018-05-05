@@ -1,8 +1,7 @@
 package ui;
 
 import actions.AppActions;
-import algorithms.Classifier;
-import classifier.RandomClassifier;
+import algorithms.*;
 import data.DataSet;
 import dataprocessors.AppData;
 import javafx.geometry.Pos;
@@ -25,7 +24,11 @@ import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.Scanner;
 
 import static vilij.settings.PropertyTypes.*;
 
@@ -56,11 +59,17 @@ public final class AppUI extends UITemplate {
     private VBox stringBox = new VBox();
     private Button classification = new Button("Classification");
     private Button clustering = new Button("Clustering");
-    private RadioButton clusteringAlg1 = new RadioButton("Algorithm 1");
-    private RadioButton clusteringAlg2 = new RadioButton("Algorithm 1");
-    private Button settingButton;
-    private Button settingButton2;
+    private RadioButton clusteringAlg1 = new RadioButton();
+    private RadioButton clusteringAlg2= new RadioButton();
+    private RadioButton clusteringAlg3= new RadioButton();
+    private RadioButton clusteringAlg4= new RadioButton();
+    private RadioButton classAlg1= new RadioButton();
+    private RadioButton classAlg2= new RadioButton();
+    private RadioButton classAlg3= new RadioButton();
+    private RadioButton classAlg4 =new RadioButton();
     private boolean algoRunning= false;
+    RandomClassifier classifier;
+    Clusterer clusterer;
 
 
 
@@ -76,6 +85,8 @@ public final class AppUI extends UITemplate {
     private DataSet dataSet = new DataSet();
     private boolean startThread = false;
     private Thread thread;
+    private String[] strings;
+    private String[] strings1;
 
 
     public AppUI(Stage primaryStage, ApplicationTemplate applicationTemplate) {
@@ -94,8 +105,8 @@ public final class AppUI extends UITemplate {
         super.setResourcePaths(applicationTemplate);
         scrnshotPath = String.join(SEPARATOR, iconsPath, manager.getPropertyValue(SCREENSHOT_ICON.name()));
         settingPath = String.join(SEPARATOR, iconsPath, manager.getPropertyValue(SETTING_ICON.name()));
-        settingButton = new Button(null, new ImageView(new Image(getClass().getResourceAsStream(settingPath))));
-        settingButton2 = new Button(null, new ImageView(new Image(getClass().getResourceAsStream(settingPath))));
+//        settingButton1 = new Button(null, new ImageView(new Image(getClass().getResourceAsStream(settingPath))));
+//        settingButton2 = new Button(null, new ImageView(new Image(getClass().getResourceAsStream(settingPath))));
 
 
     }
@@ -189,8 +200,13 @@ public final class AppUI extends UITemplate {
         StringBuilder labelString = new StringBuilder();
         algoBox.getChildren().clear();
         stringBox.getChildren().clear();
-        labelString = new StringBuilder("Total instances: " + ((AppData) applicationTemplate.getDataComponent()).getInstance()
-                + "\nTotal Labels: " + ((AppData) applicationTemplate.getDataComponent()).getallLabels().size() + "\nLabels: \n");
+        try {
+            labelString = new StringBuilder("Total instances: " + ((AppData) applicationTemplate.getDataComponent()).getInstance()
+                    + "\nTotal Labels: " + ((AppData) applicationTemplate.getDataComponent()).getallLabels().size() + "\nLabels: \n");
+        }
+        catch (Exception e){
+
+        }
         for (String s : ((AppData) applicationTemplate.getDataComponent()).getallLabels()) {
             labelString.append("\t- ").append(s).append("\n");
         }
@@ -211,82 +227,433 @@ public final class AppUI extends UITemplate {
     public void setAlgorithmActions() {
         classification.setOnAction(event -> ((AppActions) applicationTemplate.getActionComponent()).handleClassificationRequest());
         clustering.setOnAction(event -> ((AppActions) applicationTemplate.getActionComponent()).handleClusteringRequest());
-        settingButton.setOnAction(event -> {
-            createDialog();
-        });
-        settingButton2.setOnAction(event -> {
-            createDialog1();
-        });
+//        settingButton.setOnAction(event -> {
+//            createDialog();
+//        });
+//        settingButton2.setOnAction(event -> {
+//            createDialog1();
+//        });
+//        run.setOnAction(e -> {
+//            if(!cRun.isSelected() && !startThread){
+//                ErrorDialog.getDialog().show(
+//                        "Click continuously", "Click run over and over until max iterations");
+//            }
+//            if(!startThread) {
+//                startThread = true;
+//                RandomClassifier.clearSeries();
+//                RandomClassifier classifier = new RandomClassifier(dataSet, Integer.parseInt(config2[0]), Integer.parseInt(config2[1]), cRun.isSelected(), applicationTemplate);
+//                thread = new Thread(classifier);
+//                try {
+//                    run.setDisable(true);
+//                    scrnshotButton.setDisable(true);
+//                    algoRunning = true;
+//                    thread.start();
+//                }
+//                catch (Exception ex) {
+//                }
+//            }
+//            else {
+//                    try {
+//                        scrnshotButton.setDisable(true);
+//                        thread.interrupt();
+//                    }
+//                    catch (Exception exe) {
+//                    }
+//                }
+//        });
+//        run.setOnAction(e -> {
+//            if(!cRun.isSelected() && !startThread){
+//               ErrorDialog.getDialog().show(
+//                        "Click continuously", "Click run over and over until max iterations");
+//            }
+//
+//            if(!startThread) {
+//                try {
+        //            run.setDisable(true);
+//                    startThread = true;
+//                    KMeansClusterer kcluster = new KMeansClusterer(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]), Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
+//                    thread = new Thread(kcluster);
+//                    thread.start();
+//                } catch (IOException e1) {
+//                }
+//            }
+//            else{
+//                try {
+//                        scrnshotButton.setDisable(true);
+//                        thread.interrupt();
+//                    }
+//                    catch (Exception exe) {
+//                    }
+//            }
+//        });
+//        setAlgorithmSelection();
+//    }
+
         run.setOnAction(e -> {
             if(!cRun.isSelected() && !startThread){
                 ErrorDialog.getDialog().show(
                         "Click continuously", "Click run over and over until max iterations");
             }
+
             if(!startThread) {
-                startThread = true;
-                RandomClassifier.clearSeries();
-                RandomClassifier classifier = new RandomClassifier(dataSet, Integer.parseInt(config2[0]), Integer.parseInt(config2[1]), cRun.isSelected(), applicationTemplate);
-                thread = new Thread(classifier);
                 try {
                     run.setDisable(true);
-                    scrnshotButton.setDisable(true);
-                    algoRunning = true;
+                    startThread = true;
+                    RandomClusterer kcluster = new RandomClusterer(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]), Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
+                    thread = new Thread(kcluster);
                     thread.start();
-                }
-                catch (Exception ex) {
+                } catch (IOException e1) {
                 }
             }
-            else {
-                    try {
-                        scrnshotButton.setDisable(true);
-                        thread.interrupt();
-                    }
-                    catch (Exception exe) {
-                    }
+            else{
+                try {
+                    scrnshotButton.setDisable(true);
+                    thread.interrupt();
                 }
+                catch (Exception exe) {
+                }
+            }
         });
-        setAlgorithmSelection();
     }
 
 
     public void showClusterAlgorithms() {
+        clustloadTextFile();
         algorithmsDrop.getChildren().clear();
-        HBox algorithmBox = new HBox();
-        settingButton.setPrefSize(5, 5);
         Label topAlgoLabel = new Label("CLUSTERING ALGORITHMS:-");
-        topAlgoLabel.setFont(new Font(15));
-        algorithmBox.getChildren().addAll(clusteringAlg1, settingButton);
-        algorithmsDrop.getChildren().addAll(topAlgoLabel, algorithmBox);
+        algorithmsDrop.getChildren().add(topAlgoLabel);
+        for(int mc =0; mc<strings1.length; mc++) {
+            Button settings1 = new Button("",new ImageView(new Image(getClass().getResourceAsStream(settingPath))));
+            HBox eachAlgo = new HBox();
+            if(mc==0){
+                clusteringAlg1 = new RadioButton(strings1[0]);
+                eachAlgo.getChildren().addAll(clusteringAlg1,settings1);
+            }
+            if(mc==1){
+                clusteringAlg2 = new RadioButton(strings1[1]);
+                eachAlgo.getChildren().addAll(clusteringAlg2, settings1);
+            }
+            if(mc==2){
+                clusteringAlg3 = new RadioButton(strings1[2]);
+                eachAlgo.getChildren().addAll(clusteringAlg3, settings1);
+            }
+            if(mc==3) {
+                clusteringAlg4 = new RadioButton(strings1[3]);
+                eachAlgo.getChildren().addAll(clusteringAlg4, settings1);
+            }
+            //label.setLayoutX(60);
+            //radiobutton.setLayoutX(25);
+            int name = mc;
+
+            algorithmsDrop.getChildren().addAll(eachAlgo);
+
+            settings1.setOnAction(e -> {
+                try {
+                    createDialog();
+                    // DataSet dataSet = new DataSet();
+                    Class c = Class.forName("algorithms."+ strings1[name]);   //TEST
+                    Constructor constructor = c.getDeclaredConstructor(DataSet.class, int.class, int.class, int.class, boolean.class,ApplicationTemplate.class);
+                    if(strings1[name].equals("RandomClusterer")) {
+                        clusterer = (RandomClusterer) constructor.newInstance(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]),
+                                Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
+                        run.setOnAction(even  -> {
+                            if(!cRun.isSelected() && !startThread){
+                                ErrorDialog.getDialog().show(
+                                        "Click continuously", "Click run over and over until max iterations");
+                            }
+
+                            if(!startThread) {
+                                classifier.clearSeries();
+                                run.setDisable(true);
+                                startThread = true;
+                                scrnshotButton.setDisable(true);
+                                algoRunning = true;
+                                thread = new Thread(clusterer);
+                                thread.start();
+                            }
+                            else{
+                                try {
+                                    scrnshotButton.setDisable(true);
+                                    thread.interrupt();
+                                }
+                                catch (Exception exe) {
+                                }
+                            }
+                        });
+                    }
+                    else if(strings1[name].equals("KMeansClusterer")){
+                        clusterer = (KMeansClusterer) constructor.newInstance(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]),
+                                Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
+                        run.setOnAction(even  -> {
+                            if(!cRun.isSelected() && !startThread){
+                                ErrorDialog.getDialog().show(
+                                        "Click continuously", "Click run over and over until max iterations");
+                            }
+
+                            if(!startThread) {
+                                classifier.clearSeries();
+                                run.setDisable(true);
+                                startThread = true;
+                                scrnshotButton.setDisable(true);
+                                algoRunning = true;
+                                thread = new Thread(clusterer);
+                                thread.start();
+                            }
+                            else{
+                                try {
+                                    scrnshotButton.setDisable(true);
+                                    thread.interrupt();
+                                }
+                                catch (Exception exe) {
+                                }
+                            }
+                        });
+                    }
+
+
+                        run.setOnAction(even  -> {
+                            if(!cRun.isSelected() && !startThread){
+                                ErrorDialog.getDialog().show(
+                                        "Click continuously", "Click run over and over until max iterations");
+                            }
+
+                            if(!startThread) {
+                                run.setDisable(true);
+                                startThread = true;
+                                thread = new Thread(clusterer);
+                                scrnshotButton.setDisable(true);
+                                algoRunning = true;
+                                thread.start();
+                            }
+                            else{
+                                try {
+                                    scrnshotButton.setDisable(true);
+                                    thread.interrupt();
+                                }
+                                catch (Exception exe) {
+                                }
+                            }
+                        });
+
+                } catch (Exception exe) {
+                    System.out.println(strings1[name]);
+                    System.out.println("Where is the file");
+                    ErrorDialog.getDialog().show("OOPS", "The class does not exist or there is no run method");
+                }
+            });
+        }
+        setAlgorithmSelection();
+//        setAlgorithmSelection();
+//        algorithmsDrop.getChildren().clear();
+//        HBox algorithmBox = new HBox();
+//        settingButton1.setPrefSize(5, 5);
+//        Label topAlgoLabel = new Label("CLUSTERING ALGORITHMS:-");
+//        topAlgoLabel.setFont(new Font(15));
+//        algorithmBox.getChildren().addAll(clusteringAlg1, settingButton1);
+//        algorithmsDrop.getChildren().addAll(topAlgoLabel, algorithmBox);
     }
 
     public void showClassificationAlgorithms() {
+        classloadTextFile();
         algorithmsDrop.getChildren().clear();
-        HBox algorithmBox = new HBox();
-        settingButton2.setPrefSize(5, 5);
         Label topAlgoLabel = new Label("CLASSIFICATION ALGORITHMS:-");
-        topAlgoLabel.setFont(new Font(15));
-        algorithmBox.getChildren().addAll(clusteringAlg2, settingButton2);
-        algorithmsDrop.getChildren().addAll(topAlgoLabel,algorithmBox);
+        VBox algorithmBox = new VBox();
+        algorithmsDrop.getChildren().add(topAlgoLabel);
+        for(int mc =0; mc<strings.length; mc++) {
+            Button settings = new Button("",new ImageView(new Image(getClass().getResourceAsStream(settingPath))));
+            HBox eachAlgo = new HBox();
+            if(mc==0){
+                classAlg1 = new RadioButton(strings[0]);
+                eachAlgo.getChildren().addAll(classAlg1,settings);
+            }
+            if(mc==1){
+                classAlg2 = new RadioButton(strings[1]);
+                eachAlgo.getChildren().addAll(classAlg2, settings);
+            }
+            if(mc==2){
+                classAlg3 = new RadioButton(strings[2]);
+                eachAlgo.getChildren().addAll(classAlg3, settings);
+            }
+            if(mc==3) {
+                classAlg4 = new RadioButton(strings[3]);
+                eachAlgo.getChildren().addAll(classAlg4, settings);
+            }
+            //label.setLayoutX(60);
+            //radiobutton.setLayoutX(25);
+            int name = mc;
 
+            algorithmsDrop.getChildren().addAll(eachAlgo);
+
+            settings.setOnAction(e -> {
+                try {
+                    createDialog1();
+                    // DataSet dataSet = new DataSet();
+                    Class c = Class.forName("algorithms."+ strings[name]);   //TEST
+                    Constructor constructor = c.getDeclaredConstructor(DataSet.class, int.class, int.class, boolean.class,ApplicationTemplate.class);
+                    if(strings[name].equals("RandomClassifier")) {
+                        classifier = (RandomClassifier) constructor.newInstance(dataSet, Integer.parseInt(config2[0]),
+                                Integer.parseInt(config2[1]), cRun.isSelected(), applicationTemplate);
+
+
+                        run.setOnAction(even  -> {
+                            if(!cRun.isSelected() && !startThread){
+                                ErrorDialog.getDialog().show(
+                                        "Click continuously", "Click run over and over until max iterations");
+                            }
+
+                            if(!startThread) {
+                                classifier.clearSeries();
+                                run.setDisable(true);
+                                startThread = true;
+                                thread = new Thread(classifier);
+                                thread.start();
+                            }
+                            else{
+                                try {
+                                    scrnshotButton.setDisable(true);
+                                    thread.interrupt();
+                                }
+                                catch (Exception exe) {
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        ErrorDialog.getDialog().show("OOPS", "The class does not exist or there is no run method");
+                    }
+
+                } catch (Exception exe) {
+                    ErrorDialog.getDialog().show("OOPS", "The class does not exist or there is no run method");
+                }
+            });
+        }
+        setAlgorithmSelection();
     }
 
 
     public void setAlgorithmSelection(){
-        clusteringAlg1.setOnMouseReleased(event -> {
-            if(clusteringAlg1.isSelected()){
+        classAlg1.setOnMouseReleased(event -> {
+            if(classAlg1.isSelected()){
+                classAlg2.setSelected(false);
+                classAlg3.setSelected(false);
+                classAlg4.setSelected(false);
+                clusteringAlg1.setSelected(false);
                 clusteringAlg2.setSelected(false);
+                clusteringAlg3.setSelected(false);
+                clusteringAlg4.setSelected(false);
                 playBox.getChildren().clear();
                 playBox.getChildren().addAll(run);
             }
             else
                 playBox.getChildren().clear();
         });
-        clusteringAlg2.setOnMouseReleased(event -> {
-            if(clusteringAlg2.isSelected()){
+        classAlg2.setOnMouseReleased(event -> {
+            if(classAlg2.isSelected()){
+                classAlg1.setSelected(false);
+                classAlg3.setSelected(false);
+                classAlg4.setSelected(false);
                 clusteringAlg1.setSelected(false);
+                clusteringAlg2.setSelected(false);
+                clusteringAlg3.setSelected(false);
+                clusteringAlg4.setSelected(false);
                 playBox.getChildren().clear();
                 playBox.getChildren().addAll(run);
             }
+            else
+                playBox.getChildren().clear();
+        });
+        classAlg3.setOnMouseReleased(event -> {
+            if(classAlg3.isSelected()){
+                classAlg1.setSelected(false);
+                classAlg2.setSelected(false);
+                classAlg4.setSelected(false);
+                clusteringAlg1.setSelected(false);
+                clusteringAlg2.setSelected(false);
+                clusteringAlg3.setSelected(false);
+                clusteringAlg4.setSelected(false);
+                playBox.getChildren().clear();
+                playBox.getChildren().addAll(run);
+            }
+            else
+                playBox.getChildren().clear();
+        });
+        classAlg4.setOnMouseReleased(event -> {
+            if(classAlg4.isSelected()){
+                classAlg1.setSelected(false);
+                classAlg3.setSelected(false);
+                classAlg2.setSelected(false);
+                clusteringAlg1.setSelected(false);
+                clusteringAlg2.setSelected(false);
+                clusteringAlg3.setSelected(false);
+                clusteringAlg4.setSelected(false);
+                playBox.getChildren().clear();
+                playBox.getChildren().addAll(run);
+            }
+
+            else
+                playBox.getChildren().clear();
+        });
+        clusteringAlg1.setOnMouseReleased(event -> {
+            if(clusteringAlg1.isSelected()){
+                classAlg1.setSelected(false);
+                classAlg2.setSelected(false);
+                classAlg3.setSelected(false);
+                classAlg4.setSelected(false);
+                clusteringAlg4.setSelected(false);
+                clusteringAlg2.setSelected(false);
+                clusteringAlg3.setSelected(false);
+                playBox.getChildren().clear();
+                playBox.getChildren().addAll(run);
+            }
+
+            else
+                playBox.getChildren().clear();
+        });
+        clusteringAlg2.setOnMouseReleased(event -> {
+            if(clusteringAlg2.isSelected()){
+                classAlg1.setSelected(false);
+                classAlg2.setSelected(false);
+                classAlg3.setSelected(false);
+                classAlg4.setSelected(false);
+                clusteringAlg1.setSelected(false);
+                clusteringAlg4.setSelected(false);
+                clusteringAlg3.setSelected(false);
+                playBox.getChildren().clear();
+                playBox.getChildren().addAll(run);
+            }
+
+            else
+                playBox.getChildren().clear();
+        });
+        clusteringAlg3.setOnMouseReleased(event -> {
+            if(clusteringAlg3.isSelected()){
+                classAlg1.setSelected(false);
+                classAlg2.setSelected(false);
+                classAlg3.setSelected(false);
+                classAlg4.setSelected(false);
+                clusteringAlg1.setSelected(false);
+                clusteringAlg2.setSelected(false);
+                clusteringAlg4.setSelected(false);
+                playBox.getChildren().clear();
+                playBox.getChildren().addAll(run);
+            }
+
+            else
+                playBox.getChildren().clear();
+        });
+        clusteringAlg4.setOnMouseReleased(event -> {
+            if(clusteringAlg4.isSelected()){
+                classAlg1.setSelected(false);
+                classAlg2.setSelected(false);
+                classAlg3.setSelected(false);
+                classAlg4.setSelected(false);
+                clusteringAlg1.setSelected(false);
+                clusteringAlg2.setSelected(false);
+                clusteringAlg3.setSelected(false);
+                playBox.getChildren().clear();
+                playBox.getChildren().addAll(run);
+            }
+
             else
                 playBox.getChildren().clear();
         });
@@ -528,6 +895,23 @@ public final class AppUI extends UITemplate {
         newWindow.setScene(secondScene);
         newWindow.showAndWait();
 
+    }
+
+    public void classloadTextFile(){
+        File file = new File("classificationAlgos.txt");
+        try {
+            String fullString = new Scanner(file).useDelimiter("//A").next();
+            strings =  fullString.split("\n");
+        } catch (FileNotFoundException e) {
+        }
+    }
+    public void clustloadTextFile(){
+        File file = new File("clusteringAlgos.txt");
+        try {
+            String fullString = new Scanner(file).useDelimiter("//A").next();
+            strings1 =  fullString.split("\n");
+        } catch (FileNotFoundException e) {
+        }
     }
 
     public Button getScrnshotButton() {
