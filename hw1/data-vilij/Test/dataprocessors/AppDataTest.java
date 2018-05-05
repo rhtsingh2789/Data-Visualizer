@@ -1,24 +1,12 @@
+package dataprocessors;
 
-import actions.AppActions;
-import javafx.stage.FileChooser;
 import org.junit.Assert;
 import org.junit.Test;
-import dataprocessors.TSDProcessor;
-import dataprocessors.AppData;
-import ui.AppUI;
-import vilij.components.ConfirmationDialog;
-import vilij.propertymanager.PropertyManager;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Scanner;
-
-import static settings.AppPropertyTypes.DATA_FILE_EXT;
-import static settings.AppPropertyTypes.DATA_FILE_EXT_DESC;
 
 public class AppDataTest {
     TSDProcessor processor = new TSDProcessor();
@@ -51,7 +39,7 @@ public class AppDataTest {
     @Test
     public void test2(){
         String textAreaS= "@a\tLabel1\t2,3";
-        File file = new File("Checking.tsd");
+        File file = new File("dataprocessors/Checking.tsd");
         test2ing(file.toPath(), textAreaS);
     }
 
