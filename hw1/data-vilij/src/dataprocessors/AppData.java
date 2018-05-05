@@ -158,6 +158,41 @@ public class AppData implements DataComponent {
         // TODO: NOT A PART OF HW 1
     }
 
+    public void saveData(Path dataFilePath, String data) {
+        if (dataFilePath != null && saveDataHelper()) {
+            FileWriter writer;
+            try {
+                writer = new FileWriter(dataFilePath.toFile());
+                writer.write(data);
+                writer.close();
+                ((AppUI) (applicationTemplate.getUIComponent())).setSavebutton();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else if(saveDataHelper()) {
+            try {
+                PropertyManager manager = applicationTemplate.manager;
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()),
+                                manager.getPropertyValue(DATA_FILE_EXT.name())));
+                File selectedFile = fileChooser.showSaveDialog(ConfirmationDialog.getDialog());
+                FileWriter writer;
+                writer = new FileWriter(selectedFile);
+                writer.write(((AppUI) (applicationTemplate.getUIComponent())).getTextArea());
+                writer.close();
+                ((AppActions) applicationTemplate.getActionComponent()).setdataFilePath(selectedFile.toPath());
+                ((AppUI) (applicationTemplate.getUIComponent())).setSavebutton();
+            } catch (Exception e) {
+
+            }
+        }
+
+        // TODO: NOT A PART OF HW 1
+    }
+
     @Override
     public void clear() {
         processor.clear();

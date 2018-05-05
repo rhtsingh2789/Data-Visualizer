@@ -99,6 +99,7 @@ public final class AppActions implements ActionComponent {
         else if(!((AppUI) applicationTemplate.getUIComponent()).isAlgoRunning() && isUnsaved){
             try {
                 promptToSave();
+                System.exit(0);
             } catch (IOException e) {
 
             }

@@ -88,7 +88,7 @@ public class RandomClusterer extends Clusterer {
         while (chosen.size() < numberOfClusters) {
             int i = r.nextInt(instanceNames.size());
             while (chosen.contains(instanceNames.get(i)) && i<instanceNames.size())
-                ++i;
+                i = (++i % instanceNames.size());
             chosen.add(instanceNames.get(i));
         }
         dataset.getLocations().forEach((instanceName, location) -> {

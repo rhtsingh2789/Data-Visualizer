@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Scanner;
 
 import static vilij.settings.PropertyTypes.*;
@@ -68,7 +70,7 @@ public final class AppUI extends UITemplate {
     private RadioButton classAlg3= new RadioButton();
     private RadioButton classAlg4 =new RadioButton();
     private boolean algoRunning= false;
-    RandomClassifier classifier;
+    Classifier classifier;
     Clusterer clusterer;
 
 
@@ -227,93 +229,6 @@ public final class AppUI extends UITemplate {
     public void setAlgorithmActions() {
         classification.setOnAction(event -> ((AppActions) applicationTemplate.getActionComponent()).handleClassificationRequest());
         clustering.setOnAction(event -> ((AppActions) applicationTemplate.getActionComponent()).handleClusteringRequest());
-//        settingButton.setOnAction(event -> {
-//            createDialog();
-//        });
-//        settingButton2.setOnAction(event -> {
-//            createDialog1();
-//        });
-//        run.setOnAction(e -> {
-//            if(!cRun.isSelected() && !startThread){
-//                ErrorDialog.getDialog().show(
-//                        "Click continuously", "Click run over and over until max iterations");
-//            }
-//            if(!startThread) {
-//                startThread = true;
-//                RandomClassifier.clearSeries();
-//                RandomClassifier classifier = new RandomClassifier(dataSet, Integer.parseInt(config2[0]), Integer.parseInt(config2[1]), cRun.isSelected(), applicationTemplate);
-//                thread = new Thread(classifier);
-//                try {
-//                    run.setDisable(true);
-//                    scrnshotButton.setDisable(true);
-//                    algoRunning = true;
-//                    thread.start();
-//                }
-//                catch (Exception ex) {
-//                }
-//            }
-//            else {
-//                    try {
-//                        scrnshotButton.setDisable(true);
-//                        thread.interrupt();
-//                    }
-//                    catch (Exception exe) {
-//                    }
-//                }
-//        });
-//        run.setOnAction(e -> {
-//            if(!cRun.isSelected() && !startThread){
-//               ErrorDialog.getDialog().show(
-//                        "Click continuously", "Click run over and over until max iterations");
-//            }
-//
-//            if(!startThread) {
-//                try {
-        //            run.setDisable(true);
-//                    startThread = true;
-//                    KMeansClusterer kcluster = new KMeansClusterer(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]), Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
-//                    thread = new Thread(kcluster);
-//                    thread.start();
-//                } catch (IOException e1) {
-//                }
-//            }
-//            else{
-//                try {
-//                        scrnshotButton.setDisable(true);
-//                        thread.interrupt();
-//                    }
-//                    catch (Exception exe) {
-//                    }
-//            }
-//        });
-//        setAlgorithmSelection();
-//    }
-
-        run.setOnAction(e -> {
-            if(!cRun.isSelected() && !startThread){
-                ErrorDialog.getDialog().show(
-                        "Click continuously", "Click run over and over until max iterations");
-            }
-
-            if(!startThread) {
-                try {
-                    run.setDisable(true);
-                    startThread = true;
-                    RandomClusterer kcluster = new RandomClusterer(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]), Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
-                    thread = new Thread(kcluster);
-                    thread.start();
-                } catch (IOException e1) {
-                }
-            }
-            else{
-                try {
-                    scrnshotButton.setDisable(true);
-                    thread.interrupt();
-                }
-                catch (Exception exe) {
-                }
-            }
-        });
     }
 
 
@@ -341,20 +256,18 @@ public final class AppUI extends UITemplate {
                 clusteringAlg4 = new RadioButton(strings1[3]);
                 eachAlgo.getChildren().addAll(clusteringAlg4, settings1);
             }
-            //label.setLayoutX(60);
-            //radiobutton.setLayoutX(25);
-            int name = mc;
+
+            int algoIndex = mc;
 
             algorithmsDrop.getChildren().addAll(eachAlgo);
 
             settings1.setOnAction(e -> {
                 try {
                     createDialog();
-                    // DataSet dataSet = new DataSet();
-                    Class c = Class.forName("algorithms."+ strings1[name]);   //TEST
+                    Class c = Class.forName("algorithms."+ strings1[algoIndex]);   //TEST
                     Constructor constructor = c.getDeclaredConstructor(DataSet.class, int.class, int.class, int.class, boolean.class,ApplicationTemplate.class);
-                    if(strings1[name].equals("RandomClusterer")) {
-                        clusterer = (RandomClusterer) constructor.newInstance(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]),
+
+                        clusterer = (Clusterer) constructor.newInstance(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]),
                                 Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
                         run.setOnAction(even  -> {
                             if(!cRun.isSelected() && !startThread){
@@ -363,7 +276,6 @@ public final class AppUI extends UITemplate {
                             }
 
                             if(!startThread) {
-                                classifier.clearSeries();
                                 run.setDisable(true);
                                 startThread = true;
                                 scrnshotButton.setDisable(true);
@@ -380,35 +292,6 @@ public final class AppUI extends UITemplate {
                                 }
                             }
                         });
-                    }
-                    else if(strings1[name].equals("KMeansClusterer")){
-                        clusterer = (KMeansClusterer) constructor.newInstance(dataSet.fromTSDFile(((AppActions) applicationTemplate.getActionComponent()).getDataFilePath()), Integer.parseInt(config1[0]),
-                                Integer.parseInt(config1[1]), Integer.parseInt(config1[3]), cRun.isSelected(), applicationTemplate);
-                        run.setOnAction(even  -> {
-                            if(!cRun.isSelected() && !startThread){
-                                ErrorDialog.getDialog().show(
-                                        "Click continuously", "Click run over and over until max iterations");
-                            }
-
-                            if(!startThread) {
-                                classifier.clearSeries();
-                                run.setDisable(true);
-                                startThread = true;
-                                scrnshotButton.setDisable(true);
-                                algoRunning = true;
-                                thread = new Thread(clusterer);
-                                thread.start();
-                            }
-                            else{
-                                try {
-                                    scrnshotButton.setDisable(true);
-                                    thread.interrupt();
-                                }
-                                catch (Exception exe) {
-                                }
-                            }
-                        });
-                    }
 
 
                         run.setOnAction(even  -> {
@@ -436,21 +319,12 @@ public final class AppUI extends UITemplate {
                         });
 
                 } catch (Exception exe) {
-                    System.out.println(strings1[name]);
-                    System.out.println("Where is the file");
                     ErrorDialog.getDialog().show("OOPS", "The class does not exist or there is no run method");
                 }
             });
         }
         setAlgorithmSelection();
-//        setAlgorithmSelection();
-//        algorithmsDrop.getChildren().clear();
-//        HBox algorithmBox = new HBox();
-//        settingButton1.setPrefSize(5, 5);
-//        Label topAlgoLabel = new Label("CLUSTERING ALGORITHMS:-");
-//        topAlgoLabel.setFont(new Font(15));
-//        algorithmBox.getChildren().addAll(clusteringAlg1, settingButton1);
-//        algorithmsDrop.getChildren().addAll(topAlgoLabel, algorithmBox);
+
     }
 
     public void showClassificationAlgorithms() {
@@ -487,11 +361,9 @@ public final class AppUI extends UITemplate {
             settings.setOnAction(e -> {
                 try {
                     createDialog1();
-                    // DataSet dataSet = new DataSet();
                     Class c = Class.forName("algorithms."+ strings[name]);   //TEST
                     Constructor constructor = c.getDeclaredConstructor(DataSet.class, int.class, int.class, boolean.class,ApplicationTemplate.class);
-                    if(strings[name].equals("RandomClassifier")) {
-                        classifier = (RandomClassifier) constructor.newInstance(dataSet, Integer.parseInt(config2[0]),
+                        classifier = (Classifier) constructor.newInstance(dataSet, Integer.parseInt(config2[0]),
                                 Integer.parseInt(config2[1]), cRun.isSelected(), applicationTemplate);
 
 
@@ -502,8 +374,16 @@ public final class AppUI extends UITemplate {
                             }
 
                             if(!startThread) {
-                                classifier.clearSeries();
+                                try {
+                                    Method clearMethod = c.getMethod("clearSeries");
+                                    clearMethod.invoke(classifier);
+                                } catch (NoSuchMethodException e1) {
+                                } catch (IllegalAccessException e1) {
+                                } catch (InvocationTargetException e1) {
+                                }
                                 run.setDisable(true);
+                                scrnshotButton.setDisable(true);
+                                algoRunning = true;
                                 startThread = true;
                                 thread = new Thread(classifier);
                                 thread.start();
@@ -517,10 +397,7 @@ public final class AppUI extends UITemplate {
                                 }
                             }
                         });
-                    }
-                    else{
-                        ErrorDialog.getDialog().show("OOPS", "The class does not exist or there is no run method");
-                    }
+
 
                 } catch (Exception exe) {
                     ErrorDialog.getDialog().show("OOPS", "The class does not exist or there is no run method");

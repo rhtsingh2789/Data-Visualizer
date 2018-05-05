@@ -92,24 +92,11 @@ public final class TSDProcessor {
                   }
               });
         if (errorMessage.length() > 0) {
-            ErrorDialog.getDialog().show("BAD INPUT", "Please make sure that the input is correct at line " + (counter+1));
+            createDialog();
             throw new Exception(errorMessage.toString());
         }
     }
 
-//    public void textAreaLines(String tsdString){
-//        counter = 0;
-//       String[] strings =  tsdString.split("\n");
-//       for(String s: strings){
-//           counter++;
-//           if(counter == 10){
-//               break;
-//           }
-//           else{
-//               textAreaString=s+"\n";
-//           }
-//       }
-//    }
 
     /**
      * Exports the data to the specified 2-D chart.
@@ -197,5 +184,10 @@ public final class TSDProcessor {
 
     public HashSet<String> getLabels() {
         return labels;
+    }
+
+
+    private void createDialog(){
+        ErrorDialog.getDialog().show("BAD INPUT", "Please make sure that the input is correct at line " + (counter+1));
     }
 }
