@@ -808,6 +808,7 @@ public final class AppUI extends UITemplate {
     public static void showDone(){
             ErrorDialog.getDialog().show("Algorithm Ended", "Algorithm Ended");
     }
+    
 }
 
 

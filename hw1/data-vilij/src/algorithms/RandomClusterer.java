@@ -41,8 +41,10 @@ public class RandomClusterer extends Clusterer {
         int iteration = 0;
         while (iteration++ < maxIterations && continuousrun) {
             assignLabel();
-            Platform.runLater(this :: clearingChart);
-            Platform.runLater(this::toChart);
+            if(iteration % updateInterval == 0) {
+                Platform.runLater(this::clearingChart);
+                Platform.runLater(this::toChart);
+            }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -50,8 +52,10 @@ public class RandomClusterer extends Clusterer {
         }
         while (iteration++ < maxIterations && !continuousrun) {
             assignLabel();
-            Platform.runLater(this::clearingChart);
-            Platform.runLater(this::toChart);
+            if(iteration % updateInterval == 0) {
+                Platform.runLater(this::clearingChart);
+                Platform.runLater(this::toChart);
+            }
             try {
                 ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getRun().setDisable(false);

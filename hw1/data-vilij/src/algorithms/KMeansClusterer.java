@@ -52,10 +52,12 @@ public class KMeansClusterer extends Clusterer {
     public void run() {
         initializeCentroids();
         int iteration = 0;
-        while (iteration++ < maxIterations && continuousrun && tocontinue()) {
+        while (iteration++ < maxIterations && continuousrun ) {
             assignLabels();
-            Platform.runLater(this :: clearingChart);
-            Platform.runLater(this::toChart);
+            if(iteration % updateInterval == 0) {
+                Platform.runLater(this::clearingChart);
+                Platform.runLater(this::toChart);
+            }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -64,8 +66,10 @@ public class KMeansClusterer extends Clusterer {
         }
         while (iteration++ < maxIterations && !continuousrun) {
             assignLabels();
-            Platform.runLater(this::clearingChart);
-            Platform.runLater(this::toChart);
+            if(iteration % updateInterval == 0) {
+                Platform.runLater(this::clearingChart);
+                Platform.runLater(this::toChart);
+            }
             try {
                 ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getRun().setDisable(false);
