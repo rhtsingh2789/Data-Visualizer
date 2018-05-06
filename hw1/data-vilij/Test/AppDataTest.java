@@ -1,7 +1,6 @@
 import dataprocessors.TSDProcessor;
 import org.junit.Assert;
 import org.junit.Test;
-import ui.AppUI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,18 +14,6 @@ public class AppDataTest {
     TSDProcessor processor = new TSDProcessor();
 
 
-    public void test2ing(Path dataFilePath, String string){
-
-        File selectedFile = new File(dataFilePath.toString());
-        FileWriter writer;
-        try {
-            writer = new FileWriter(selectedFile);
-            writer.write(string);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     public void OneLineTest() throws Exception {
@@ -44,7 +31,7 @@ public class AppDataTest {
         String fullString="";
         String textAreaS= "@a\tLabel1\t2,4";
         File file = new File("Checking.tsd");
-        test2ing(file.toPath(), textAreaS);
+        saveData(file.toPath(), textAreaS);
         try {
             fullString = new Scanner(file).useDelimiter("//A").next();
         } catch (FileNotFoundException e) {
@@ -52,9 +39,31 @@ public class AppDataTest {
         Assert.assertTrue(textAreaS.equals(fullString));
     }
 
-    @Test(expected = ParseException.class)
-    public void SetConfigurationTest(){
+    @Test(expected = NumberFormatException.class)
+    public void SetConfigurationTest() throws ParseException {
+            checkConfig("-1","z","des");
+    }
 
+
+
+
+    public void saveData(Path dataFilePath, String string){
+
+        File selectedFile = new File(dataFilePath.toString());
+        FileWriter writer;
+        try {
+            writer = new FileWriter(selectedFile);
+            writer.write(string);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkConfig(String s, String s2, String s3) throws NumberFormatException{
+        int config1 = Integer.parseInt(s);
+        int config2 = Integer.parseInt(s2);
+        int config3 = Integer.parseInt(s3);
     }
 
 
