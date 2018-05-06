@@ -1,7 +1,8 @@
+import dataprocessors.AppData;
 import dataprocessors.TSDProcessor;
 import org.junit.Assert;
 import org.junit.Test;
-
+import ui.AppUI;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -41,7 +42,12 @@ public class AppDataTest {
 
     @Test(expected = NumberFormatException.class)
     public void SetConfigurationTest() throws ParseException {
-            checkConfig("-1","z","des");
+            AppUI.thirdTest("-1","z","3");
+    }
+
+    @Test
+    public void testingWithWrongInput(){
+        AppUI.testingWithWrongInput("-1","-2","-3");
     }
 
 
@@ -58,12 +64,6 @@ public class AppDataTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void checkConfig(String s, String s2, String s3) throws NumberFormatException{
-        int config1 = Integer.parseInt(s);
-        int config2 = Integer.parseInt(s2);
-        int config3 = Integer.parseInt(s3);
     }
 
 

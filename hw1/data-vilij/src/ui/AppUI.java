@@ -809,6 +809,34 @@ public final class AppUI extends UITemplate {
             ErrorDialog.getDialog().show("Algorithm Ended", "Algorithm Ended");
     }
 
+    public static void thirdTest(String one, String two, String three){
+        int confid1 = Integer.parseInt(one);
+        int confid2 = Integer.parseInt(two);
+        int confid3 = Integer.parseInt(three);
+    }
+
+    public static void testingWithWrongInput(String one, String two, String three){
+        int confid1;
+        int confid2;
+        int confid3;
+        DataSet d1 = new DataSet();
+        if(one.charAt(0)>='1' && one.charAt(0)<='9')
+            confid1 = Integer.parseInt(one);
+        else
+            confid1 = 1;
+        if(two.charAt(0)>='1' && two.charAt(0)<='9')
+            confid2 = Integer.parseInt(two);
+        else
+            confid2 = 1;
+        if(two.charAt(0)>='1' && two.charAt(0)<='9')
+            confid3 = Integer.parseInt(two);
+        else
+            confid3 = 1;
+
+        RandomClusterer clusterer = new RandomClusterer(d1,confid1,confid2,confid3,true,null);
+        KMeansClusterer clus1 = new KMeansClusterer(d1,confid1,confid2,confid3,true,null);
+        RandomClassifier class1= new RandomClassifier(d1,confid1,confid2,true,null);
+    }
 }
 
 
